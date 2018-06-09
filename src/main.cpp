@@ -166,6 +166,14 @@ float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 
+////A FREE CAMERA USA ESSAS VARIAVEIS///
+bool keyW = false;
+bool keyS = false;
+bool keyA = false;
+bool keyD = false;
+bool somethingPressed = false;
+////END///
+
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
 float g_ForearmAngleX = 0.0f;
@@ -360,7 +368,49 @@ int main(int argc, char* argv[])
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
 
+        ////FREEEE CAMERAAAAAA//////
 
+        if(!somethingPressed){ camera_position_c = glm::vec4(x,y,z,1.0f); }
+        camera_view_vector = glm::vec4(-x,-y,-z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
+
+
+        if(keyA)
+        {
+            rotated = Matrix_Rotate_Y(1.5) * camera_view_vector;
+            camera_position_c.x=camera_position_c.x + 0.05*rotated.x;
+            camera_position_c.z=camera_position_c.z + 0.05*rotated.z;
+            keyA=false;
+            somethingPressed=true;
+        }
+
+        if(keyD)
+        {
+            rotated = Matrix_Rotate_Y(1.5) * camera_view_vector;
+            camera_position_c.x=camera_position_c.x - 0.05*rotated.x;
+            camera_position_c.z=camera_position_c.z - 0.05*rotated.z;
+            keyD=false;
+            somethingPressed=true;
+        }
+
+        if(keyW)
+        {
+            camera_position_c.x=camera_position_c.x + 0.05*camera_view_vector.x;
+            camera_position_c.y=camera_position_c.y + 0.05*camera_view_vector.y;
+            camera_position_c.z=camera_position_c.z + 0.05*camera_view_vector.z;
+            keyW=false;
+            somethingPressed=true;
+        }
+
+        if(keyS)
+        {
+            camera_position_c.x=camera_position_c.x - 0.05*camera_view_vector.x;
+            camera_position_c.y=camera_position_c.y - 0.05*camera_view_vector.y;
+            camera_position_c.z=camera_position_c.z - 0.05*camera_view_vector.z;
+            keyS=false;
+            somethingPressed=true;
+        }
+
+        ////END OF FREE CAMERAA////
 
 
 
@@ -1232,6 +1282,32 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
     }
+
+    //// TECLAS WASD USADAS PARA CONTROLAR A FREE CAMERA ///
+    if (key == GLFW_KEY_W && action == GLFW_PRESS)
+    {
+        //somethingPressed=false;
+        //g_CameraDistance=g_CameraDistance-0.1f;
+        keyW=true;
+    }
+
+    if (key == GLFW_KEY_A && action == GLFW_PRESS)
+    {
+        keyA=true;
+    }
+
+    if (key == GLFW_KEY_S && action == GLFW_PRESS)
+    {
+        //somethingPressed=false;
+        //g_CameraDistance=g_CameraDistance+0.1f;
+        keyS=true;
+    }
+
+    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+    {
+        keyD=true;
+    }
+    //// END ///
 }
 
 // Definimos o callback para impressão de erros da GLFW no terminal
