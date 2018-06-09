@@ -330,6 +330,10 @@ int main(int argc, char* argv[])
     glm::mat4 the_model;
     glm::mat4 the_view;
 
+    glm::vec4 rotated;
+    glm::vec4 camera_position_c;
+    glm::vec4 camera_view_vector;
+
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
