@@ -166,14 +166,6 @@ float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 
-////A FREE CAMERA USA ESSAS VARIAVEIS///
-bool keyW = false;
-bool keyS = false;
-bool keyA = false;
-bool keyD = false;
-bool somethingPressed = false;
-////END///
-
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
 float g_ForearmAngleX = 0.0f;
@@ -199,14 +191,25 @@ GLint object_id_uniform;
 GLint bbox_min_uniform;
 GLint bbox_max_uniform;
 
-glm::vec3 g_cp = glm::vec3(0,0,3);
-glm::vec3 g_vvv = glm::vec3(0,0,-1);
-glm::vec3 g_up = glm::vec3(0,1,0);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-float lastX = 400, lastY = 400;
-float yaw = -90, pitch = 0;
-bool firstMouse = true;
-float g_deltaTime = 0, g_lastFrame = 0;
+/* MINE */
+void moving_player(glm::vec4 u,glm::vec4 w);
+float moving_delta = 0.01f;
+// PLAYER COORDINATES
+float x_player = 0.0f;
+float y_player = 0.0f;
+float z_player = -4.0f;
+glm::vec4 player_pos = glm::vec4(x_player, y_player,z_player, 1.0f);
+// GLOBAL W U TO MOVE
+glm::vec4 w;
+glm::vec4 u;
+float global_dx;
+
+// DIRECTIONS BOOLEANS
+int a_player_moving = 0;
+int d_player_moving = 0;
+int w_player_moving = 0;
+int s_player_moving = 0;
+/* END MINE */
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
@@ -330,10 +333,6 @@ int main(int argc, char* argv[])
     glm::mat4 the_model;
     glm::mat4 the_view;
 
-    glm::vec4 rotated;
-    glm::vec4 camera_position_c;
-    glm::vec4 camera_view_vector;
-
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
@@ -366,55 +365,22 @@ int main(int argc, char* argv[])
 
         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
-        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        glm::vec4 camera_view_vector = glm::vec4(x,y,z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
+        // Get the W and U to use in moving_player
+        // these vectors are globals, but pass by parameter just to avoid global
+        // use
+        w = -camera_view_vector;
+        w = w/norm(w);
+        u = crossproduct(camera_up_vector, w);
+        u = u/norm(u);
 
-        ////FREEEE CAMERAAAAAA//////
+        moving_player(u,w);
 
-        if(!somethingPressed){ camera_position_c = glm::vec4(x,y,z,1.0f); }
-        camera_view_vector = glm::vec4(-x,-y,-z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
+        glm::vec4 camera_position_c  = player_pos; // Ponto "c", centro da câmera
 
 
-        if(keyA)
-        {
-            rotated = Matrix_Rotate_Y(1.5) * camera_view_vector;
-            camera_position_c.x=camera_position_c.x + 0.05*rotated.x;
-            camera_position_c.z=camera_position_c.z + 0.05*rotated.z;
-            keyA=false;
-            somethingPressed=true;
-        }
-
-        if(keyD)
-        {
-            rotated = Matrix_Rotate_Y(1.5) * camera_view_vector;
-            camera_position_c.x=camera_position_c.x - 0.05*rotated.x;
-            camera_position_c.z=camera_position_c.z - 0.05*rotated.z;
-            keyD=false;
-            somethingPressed=true;
-        }
-
-        if(keyW)
-        {
-            camera_position_c.x=camera_position_c.x + 0.05*camera_view_vector.x;
-            camera_position_c.y=camera_position_c.y + 0.05*camera_view_vector.y;
-            camera_position_c.z=camera_position_c.z + 0.05*camera_view_vector.z;
-            keyW=false;
-            somethingPressed=true;
-        }
-
-        if(keyS)
-        {
-            camera_position_c.x=camera_position_c.x - 0.05*camera_view_vector.x;
-            camera_position_c.y=camera_position_c.y - 0.05*camera_view_vector.y;
-            camera_position_c.z=camera_position_c.z - 0.05*camera_view_vector.z;
-            keyS=false;
-            somethingPressed=true;
-        }
-
-        ////END OF FREE CAMERAA////
 
 
 
@@ -1131,6 +1097,25 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     }
 }
 
+
+void moving_player(glm::vec4 u,glm::vec4 w) {
+  // You need to add or sub W or U vector to player_pos
+  if (w_player_moving == 1) {
+    player_pos = player_pos - moving_delta * w;
+  }
+  if (s_player_moving == 1) {
+    player_pos = player_pos + moving_delta * w;
+  }
+  if (a_player_moving == 1) {
+    player_pos = player_pos - moving_delta * u;
+  }
+  if (d_player_moving == 1) {
+    player_pos = player_pos + moving_delta * u;
+  }
+}
+
+
+
 // Função callback chamada sempre que o usuário movimentar o cursor do mouse em
 // cima da janela OpenGL.
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
@@ -1221,6 +1206,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 // tecla do teclado. Veja http://www.glfw.org/docs/latest/input_guide.html#input_key
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
 {
+
     // Se o usuário pressionar a tecla ESC, fechamos a janela.
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -1248,6 +1234,45 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         g_AngleZ += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
     }
+    /*
+    MOVING ACTIVE
+     */
+    if (key == GLFW_KEY_A && action == GLFW_PRESS)
+    {
+        a_player_moving = 1;
+    }
+    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+    {
+        d_player_moving = 1;
+    }
+    if (key == GLFW_KEY_W && action == GLFW_PRESS)
+    {
+        w_player_moving = 1;
+    }
+    if (key == GLFW_KEY_S && action == GLFW_PRESS)
+    {
+        s_player_moving = 1;
+    }
+
+    /*
+    MOVING RELEASE
+     */
+    if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+    {
+        a_player_moving = 0;
+    }
+    if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+    {
+        d_player_moving = 0;
+    }
+    if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+    {
+        w_player_moving = 0;
+    }
+    if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+    {
+        s_player_moving = 0;
+    }
 
     // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
@@ -1255,10 +1280,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         g_AngleX = 0.0f;
         g_AngleY = 0.0f;
         g_AngleZ = 0.0f;
-        g_ForearmAngleX = 0.0f;
-        g_ForearmAngleZ = 0.0f;
-        g_TorsoPositionX = 0.0f;
-        g_TorsoPositionY = 0.0f;
     }
 
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
@@ -1278,41 +1299,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         g_ShowInfoText = !g_ShowInfoText;
     }
-
-    // Se o usuário apertar a tecla R, recarregamos os shaders dos arquivos "shader_fragment.glsl" e "shader_vertex.glsl".
-    if (key == GLFW_KEY_R && action == GLFW_PRESS)
-    {
-        LoadShadersFromFiles();
-        fprintf(stdout,"Shaders recarregados!\n");
-        fflush(stdout);
-    }
-
-    //// TECLAS WASD USADAS PARA CONTROLAR A FREE CAMERA ///
-    if (key == GLFW_KEY_W && action == GLFW_PRESS)
-    {
-        //somethingPressed=false;
-        //g_CameraDistance=g_CameraDistance-0.1f;
-        keyW=true;
-    }
-
-    if (key == GLFW_KEY_A && action == GLFW_PRESS)
-    {
-        keyA=true;
-    }
-
-    if (key == GLFW_KEY_S && action == GLFW_PRESS)
-    {
-        //somethingPressed=false;
-        //g_CameraDistance=g_CameraDistance+0.1f;
-        keyS=true;
-    }
-
-    if (key == GLFW_KEY_D && action == GLFW_PRESS)
-    {
-        keyD=true;
-    }
-    //// END ///
 }
+
 
 // Definimos o callback para impressão de erros da GLFW no terminal
 void ErrorCallback(int error, const char* description)
