@@ -162,7 +162,7 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // usuário através do mouse (veja função CursorPosCallback()). A posição
 // efetiva da câmera é calculada dentro da função main(), dentro do loop de
 // renderização.
-float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
+float g_CameraTheta = 4.6f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 
@@ -195,9 +195,9 @@ GLint bbox_max_uniform;
 void moving_player(glm::vec4 u,glm::vec4 w);
 float moving_delta = 0.01f;
 // PLAYER COORDINATES
-float x_player = 0.0f;
+float x_player = 3.0f;
 float y_player = 0.0f;
-float z_player = -4.0f;
+float z_player = 0.0f;
 glm::vec4 player_pos = glm::vec4(x_player, y_player,z_player, 1.0f);
 // GLOBAL W U TO MOVE
 glm::vec4 w;
@@ -1134,7 +1134,7 @@ void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
 
         // Atualizamos parâmetros da câmera com os deslocamentos
         g_CameraTheta -= 0.01f*dx;
-        g_CameraPhi   += 0.01f*dy;
+        g_CameraPhi   -= 0.01f*dy;
 
         // Em coordenadas esféricas, o ângulo phi deve ficar entre -pi/2 e +pi/2.
         float phimax = 3.141592f/2;
