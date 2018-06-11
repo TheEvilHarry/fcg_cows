@@ -162,8 +162,10 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // usuário através do mouse (veja função CursorPosCallback()). A posição
 // efetiva da câmera é calculada dentro da função main(), dentro do loop de
 // renderização.
-float g_CameraTheta = 4.6f; // Ângulo no plano ZX em relação ao eixo Z
-float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
+
+// ANGULO INICIAL DE VISAO
+float g_CameraTheta = -4.7f; // Ângulo no plano ZX em relação ao eixo Z
+float g_CameraPhi = 0.05f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 
 // Variáveis que controlam rotação do antebraço
@@ -191,15 +193,15 @@ GLint object_id_uniform;
 GLint bbox_min_uniform;
 GLint bbox_max_uniform;
 
-/* MINE */
+// ATRIBUTOS DE POSIÇÃO DO JOGADOR + FREE CAMERA CONTROL
 void moving_player(glm::vec4 u,glm::vec4 w);
 float moving_delta = 0.01f;
-// PLAYER COORDINATES
-float x_player = 3.0f;
+// POSIÇÃO INICIAL DO JOGADOR
+float x_player = -3.0f;
 float y_player = 0.0f;
 float z_player = 0.0f;
 glm::vec4 player_pos = glm::vec4(x_player, y_player,z_player, 1.0f);
-// GLOBAL W U TO MOVE
+// vetores U e W
 glm::vec4 w;
 glm::vec4 u;
 float global_dx;
@@ -285,8 +287,8 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
+    LoadTextureImage("../../data/scifi.jpg");      // TextureImage0
+    LoadTextureImage("../../data/lizzard.jpg"); // TextureImage1
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -380,11 +382,6 @@ int main(int argc, char* argv[])
 
         glm::vec4 camera_position_c  = player_pos; // Ponto "c", centro da câmera
 
-
-
-
-
-
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.  Veja slide 179 do
         // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
@@ -433,23 +430,76 @@ int main(int argc, char* argv[])
         #define BUNNY  1
         #define PLANE  2
         #define COW    3
+        #define FLOOR  4
+        #define ONEWALL 5
+        #define TWOWALL 6
+        #define THREEWALL 7
 
-        // Desenhamos o modelo da esfera
 
+        //First cow
           model = Matrix_Translate(0.0f,0.0f,0.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
-        // Desenhamos o modelo do coelho
+
+        //Floor
+        model = Matrix_Translate(4.0f,-1.0f,0.0f)
+                * Matrix_Scale(16.0f, 1.0f, 4.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+        //roomPlanes[0] = getPlaneEquation(model);
+
+        //Left wall
+        model = Matrix_Translate(4.0f,2.0f,-4.0f)
+              * Matrix_Rotate_X(20.44f)
+              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, ONEWALL);
+        DrawVirtualObject("plane");
+
+        //Right wall
+         model = Matrix_Translate(4.0f,2.0f,4.0f)
+              * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
+              * Matrix_Rotate_X(-20.44f)
+              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, TWOWALL);
+        DrawVirtualObject("plane");
+
+
+       //Back wall
+        model = Matrix_Translate(-11.5f,1.0f,0.0f)
+                  * Matrix_Scale(1.0f, 2.5f, 4.0f)
+                  *Matrix_Rotate_Z(-20.44f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, THREEWALL);
+        DrawVirtualObject("plane");
+
+         //Ceiling
+        model = Matrix_Translate(4.0f,4.0f,0.0f)
+                *Matrix_Rotate_Z(40.88)
+                * Matrix_Scale(16.0f, 1.0f, 4.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+
+
+
      /*
 
+
+        // Desenhamos o modelo do coelho
 
      model = Matrix_Translate(1.0f,0.0f,0.0f)
               * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
+
+        // Desenhamos o modelo da esfera
 
          model = Matrix_Translate(-1.0f,0.0f,0.0f)
               * Matrix_Rotate_Z(0.6f)
@@ -459,12 +509,13 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, SPHERE);
         DrawVirtualObject("sphere");
 
-*/
-        // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,-1.1f,0.0f);
+         // Desenhamos o plano do chão
+
+         model = Matrix_Translate(0.0f,-1.1f,0.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
-        DrawVirtualObject("plane");
+        DrawVirtualObject("plane"); */ //Plano original
+
 
 
 
