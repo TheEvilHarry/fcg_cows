@@ -23,6 +23,11 @@ uniform mat4 projection;
 #define BUNNY  1
 #define PLANE  2
 #define COW    3
+#define FLOOR  4
+#define ONEWALL 5
+#define TWOWALL 6
+#define THREEWALL 7
+
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -148,9 +153,27 @@ void main()
         U = texcoords.x;
         V = texcoords.y;
     }
+    else if (object_id == FLOOR)
+    {
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+    else if (object_id == ONEWALL || object_id == TWOWALL || object_id == THREEWALL )
+    {
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-    vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+
+     vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+
+     if(object_id==COW)
+          Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+
+
+
 
     // Equação de Iluminação
     float lambert = max(0,dot(n,l));
