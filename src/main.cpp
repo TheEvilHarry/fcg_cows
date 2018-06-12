@@ -346,7 +346,7 @@ int main(int argc, char* argv[])
         // Conversaremos sobre sistemas de cores nas aulas de Modelos de Iluminação.
         //
         //           R     G     B     A
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
         // e também resetamos todos os pixels do Z-buffer (depth buffer).
@@ -394,7 +394,7 @@ int main(int argc, char* argv[])
         // estão no sentido negativo! Veja slides 191-194 do documento
         // "Aula_09_Projecoes.pdf".
         float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -10.0f; // Posição do "far plane"
+        float farplane  = -400.0f; // Posição do "far plane"
 
         if (g_UsePerspectiveProjection)
         {
@@ -444,7 +444,7 @@ int main(int argc, char* argv[])
 
 
         //Floor
-        model = Matrix_Translate(4.0f,-1.0f,0.0f)
+        model = Matrix_Translate(3.35f,-1.0f,0.0f)
                 * Matrix_Scale(16.0f, 1.0f, 4.0f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, FLOOR);
@@ -452,20 +452,20 @@ int main(int argc, char* argv[])
         //roomPlanes[0] = getPlaneEquation(model);
 
         //Left wall
-        model = Matrix_Translate(4.0f,2.0f,-4.0f)
-              * Matrix_Rotate_X(20.44f)
-              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+        model = Matrix_Translate(8.0f,2.0f,-3.7f)
+              * Matrix_Rotate_X(20.45f)
+              * Matrix_Scale(20.0f, 1.0f, 4.0f); //
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, ONEWALL);
         DrawVirtualObject("plane");
 
         //Right wall
-         model = Matrix_Translate(4.0f,2.0f,4.0f)
+         model = Matrix_Translate(4.2f,2.0f,4.0f)
               * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
-              * Matrix_Rotate_X(-20.44f)
+              * Matrix_Rotate_X(-20.4232f)
               * Matrix_Scale(16.0f, 1.0f, 4.0f); //
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, TWOWALL);
+        glUniform1i(object_id_uniform, ONEWALL);
         DrawVirtualObject("plane");
 
 
@@ -478,13 +478,148 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, THREEWALL);
         DrawVirtualObject("plane");
 
+
+        //Floor 2
+        model = Matrix_Translate(24.2f,-1.0f,12.0f)
+                *Matrix_Rotate_Y(20.45f)
+                * Matrix_Scale(16.5f, 1.0f, 5.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+        //roomPlanes[0] = getPlaneEquation(model);
+
+
+
+       //Front wall / Left Wall From Second hallway
+        model = Matrix_Translate(28.0f,2.0f,8.0f)
+                  * Matrix_Scale(1.0f,4.0f, 16.0f)
+                  *Matrix_Rotate_Z(20.44f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, THREEWALL);
+        DrawVirtualObject("plane");
+
          //Ceiling
         model = Matrix_Translate(4.0f,4.0f,0.0f)
-                *Matrix_Rotate_Z(40.88)
+                *Matrix_Rotate_Z(40.897)
                 * Matrix_Scale(16.0f, 1.0f, 4.0f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, FLOOR);
         DrawVirtualObject("plane");
+
+        //Front Wall - Left Wall of Second Hallway
+        model = Matrix_Translate(23.5f,5.0f,12.0f)
+                *Matrix_Rotate_Z(40.897f)
+                *Matrix_Rotate_Y(20.45f)
+
+                * Matrix_Scale(16.5f, 1.0f, 5.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+
+
+         model = Matrix_Translate(20.0f,1.0f,8.0f)
+                  * Matrix_Scale(1.0f, 4.0f, 4.0f)
+                  *Matrix_Rotate_Z(-20.44f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, THREEWALL);
+        DrawVirtualObject("plane");
+
+        model = Matrix_Translate(20.0f,1.0f,23.0f)
+                  * Matrix_Scale(1.0f, 4.0f, 6.0f)
+                  *Matrix_Rotate_Z(-20.44f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, THREEWALL);
+        DrawVirtualObject("plane");
+
+        model = Matrix_Translate(4.2f,2.0f,17.0f)
+              * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
+              * Matrix_Rotate_X(-20.4232f)
+              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, ONEWALL);
+        DrawVirtualObject("plane");
+
+        model = Matrix_Translate(4.2f,2.0f,12.0f)
+              * Matrix_Rotate_X(20.4232f)
+              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, ONEWALL);
+        DrawVirtualObject("plane");
+
+         model = Matrix_Translate(3.35f,-1.0f,14.5f)
+                * Matrix_Scale(16.0f, 1.0f, 4.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+
+        model = Matrix_Translate(4.0f,4.0f,14.5f)
+                *Matrix_Rotate_Z(40.897)
+                * Matrix_Scale(16.0f, 1.0f, 4.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+
+
+
+
+        model = Matrix_Translate(35.5f,2.0f,28.55f)
+              * Matrix_Rotate_Z(40.865f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
+              * Matrix_Rotate_X(-20.4232f)
+              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, ONEWALL);
+        DrawVirtualObject("plane");
+
+
+
+        model = Matrix_Translate(40.0f,5.9f,25.0f)
+                *Matrix_Rotate_Z(40.897)
+                * Matrix_Scale(16.0f, 1.0f, 4.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+
+        model = Matrix_Translate(41.5f,-1.0f,25.0f)
+                * Matrix_Scale(12.0f, 1.0f, 4.0f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, FLOOR);
+        DrawVirtualObject("plane");
+
+
+         //Left wall
+        model = Matrix_Translate(48.0f,2.0f,23.8f)
+              * Matrix_Rotate_X(20.45f)
+              * Matrix_Scale(20.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, ONEWALL);
+        DrawVirtualObject("plane");
+
+
+
+     /*
+
+       //Left wall
+        model = Matrix_Translate(28.2f,2.0f,12.0f)
+              * Matrix_Rotate_Y(-20.454f)
+              * Matrix_Rotate_X(20.45f)
+              * Matrix_Scale(20.0f, 1.0f, 4.0f); //
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, ONEWALL);
+        DrawVirtualObject("plane");
+
+
+
+      model = Matrix_Translate(11.5f,1.0f,0.0f)
+                  * Matrix_Scale(1.0f, 2.5f, 4.0f)
+                  *Matrix_Rotate_Z(20.44f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, THREEWALL);
+        DrawVirtualObject("plane"); */
+
+
+
 
 
 
