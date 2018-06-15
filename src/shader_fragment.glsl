@@ -172,8 +172,13 @@ void main()
      vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
 
      if(object_id==COW)
+     {
           Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
-
+     }
+     else if (object_id==CUBE)
+     {
+        Kd0 = vec3(0.8,0.4,0.08);
+     }
 
 
 
