@@ -289,6 +289,8 @@ int main(int argc, char* argv[])
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/scifi.jpg");      // TextureImage0
     LoadTextureImage("../../data/lizzard.jpg"); // TextureImage1
+    LoadTextureImage("../../data/door.jpg");
+    LoadTextureImage("../../data/key.jpg");
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -441,17 +443,40 @@ int main(int argc, char* argv[])
 
         #define CUBE 8
 
+        #define DOOR 9
+        #define FLOORKEY 10
+
 
         //First cow
-          model = Matrix_Translate(0.0f,0.0f,0.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+          model = Matrix_Translate(0.0f,0.0f,0.0f)
+                * Matrix_Rotate_X(g_AngleX)
+                * Matrix_Rotate_Y(g_AngleY)
+                * Matrix_Rotate_Z(g_AngleZ);
+          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
+
+
+        //second cow
+
+
+    /*    glm::vec3 second_cow_position = glm::vec3(13.0f, -0.4f,0.0f);
+        glm::vec3 speed = glm::vec3(-1.0f,1.0f,1.0f);
+
+         model = Matrix_Translate(second_cow_position)
+                * Matrix_Rotate_Y(15.57f);
+          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow"); */
+
+
+
+
         // Spinning cube
-        model = Matrix_Translate(-4.0f,0.0f,0.0f)
+        model = Matrix_Translate(47.0f,0.0f,26.5f)
                 * Matrix_Scale(0.1,0.1,0.1)
-                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
+                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, CUBE);
         DrawVirtualObject("cube");
@@ -597,7 +622,7 @@ int main(int argc, char* argv[])
         model = Matrix_Translate(41.5f,-1.0f,25.0f)
                 * Matrix_Scale(12.0f, 1.0f, 4.0f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
+        glUniform1i(object_id_uniform, FLOORKEY);
         DrawVirtualObject("plane");
 
 
@@ -608,6 +633,22 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, ONEWALL);
         DrawVirtualObject("plane");
+
+        model = Matrix_Translate(-7.0f,1.0f,13.7f)
+                  * Matrix_Scale(1.0f, 2.8f, 4.0f)
+                  *Matrix_Rotate_Z(-20.44f);
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, DOOR);
+        DrawVirtualObject("plane");
+
+         model = Matrix_Translate(50.5f,3.0f,26.5f)
+                  * Matrix_Scale(1.0f,4.0f, 3.0f)
+                  *Matrix_Rotate_Z(20.44f);
+
+        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform1i(object_id_uniform, THREEWALL);
+        DrawVirtualObject("plane");
+
 
 
 
