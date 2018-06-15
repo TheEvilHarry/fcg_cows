@@ -297,6 +297,10 @@ int main(int argc, char* argv[])
     ComputeNormals(&cowmodel);
     BuildTrianglesAndAddToVirtualScene(&cowmodel);
 
+    ObjModel cubemodel("../../data/cube.obj");
+    ComputeNormals(&cubemodel);
+    BuildTrianglesAndAddToVirtualScene(&cubemodel);
+
 
    /* ObjModel spheremodel("../../data/sphere.obj");
     ComputeNormals(&spheremodel);
@@ -435,12 +439,22 @@ int main(int argc, char* argv[])
         #define TWOWALL 6
         #define THREEWALL 7
 
+        #define CUBE 8
+
 
         //First cow
           model = Matrix_Translate(0.0f,0.0f,0.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
+
+        // Spinning cube
+        model = Matrix_Translate(-4.0f,0.0f,0.0f)
+                * Matrix_Scale(0.1,0.1,0.1)
+                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, CUBE);
+        DrawVirtualObject("cube");
 
 
         //Floor

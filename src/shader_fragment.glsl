@@ -28,6 +28,8 @@ uniform mat4 projection;
 #define TWOWALL 6
 #define THREEWALL 7
 
+#define CUBE 8
+
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
