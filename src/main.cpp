@@ -47,6 +47,11 @@
 // Headers locais, definidos na pasta "include/"
 #include "utils.h"
 #include "matrices.h"
+#include "item.hpp"
+#include "item.cpp"
+#include "defines.h"
+
+
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -119,6 +124,19 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 void CursorPosCallback(GLFWwindow* window, double xpos, double ypos);
 void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
+
+
+
+// ##### coisas adicionadas por nós #####
+Item vaca_inicial(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "cow", COW);
+bool menu;
+char* current_name;
+int current_id;
+// ##### end #####
+
+
+
 
 // Definimos uma estrutura que armazenará dados necessários para renderizar
 // cada objeto da cena virtual.
@@ -344,6 +362,32 @@ int main(int argc, char* argv[])
     glm::mat4 the_model;
     glm::mat4 the_view;
 
+
+
+
+    /// ADICIONADOS #######
+    menu = true;
+
+    /// END #######
+    while (menu && !glfwWindowShouldClose(window)) {
+
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glUseProgram(program_id);
+        // implementar a camera look at aqui
+
+
+
+        char buffer[80];
+        float pad = TextRendering_LineHeight(window);
+
+        snprintf(buffer, 50,"enter para continuar");
+        TextRendering_PrintString(window, buffer, -0.7f+pad/10, -1.0f+2*pad/10, 3.0f);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
+    }
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
@@ -439,20 +483,9 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-        #define SPHERE 0
-        #define BUNNY  1
-        #define PLANE  2
-        #define COW    3
-        #define FLOOR  4
-        #define ONEWALL 5
-        #define TWOWALL 6
-        #define THREEWALL 7
 
-        #define CUBE 8
-
-        #define DOOR 9
-        #define KEYF 10
-
+        current_name = (char*)vaca_inicial.getName();
+        current_id = vaca_inicial.getId();
 
         //First cow
           model = Matrix_Translate(0.0f,0.0f,0.0f)
@@ -460,8 +493,8 @@ int main(int argc, char* argv[])
                 * Matrix_Rotate_Y(g_AngleY)
                 * Matrix_Rotate_Z(g_AngleZ);
           glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, COW);
-        DrawVirtualObject("cow");
+        glUniform1i(object_id_uniform, current_id);
+        DrawVirtualObject(current_name);
 
 
 
@@ -1623,6 +1656,12 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     if (key == GLFW_KEY_H && action == GLFW_PRESS)
     {
         g_ShowInfoText = !g_ShowInfoText;
+    }
+
+    //controle do menu:
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS && menu == true)
+    {
+        menu = false;
     }
 }
 
