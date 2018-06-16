@@ -38,8 +38,9 @@ void Item::setPosition (vec4 newPosition) {
   position = newPosition;
 }
 
-void Item::move(vec4 direction) {
-	// wait for it;
+float Item::move(vec4 direction) {
+    //move foward only
+    return direction.x + (float)glfwGetTime() * 0.5f;
 }
 
 char const * Item::getName() {

@@ -129,10 +129,14 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 
 // ##### coisas adicionadas por nós #####
+bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &bbox_min2, glm::vec4 &bbox_max2);
+
 Item vaca_inicial(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "cow", COW);
+Item spinning_cube(glm::vec4(3.0f, 0.0f, 0.0f, 0.0f), "cube", CUBE);
 bool menu;
 char* current_name;
 int current_id;
+vec4 current_position;
 // ##### end #####
 
 
@@ -484,15 +488,52 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
 
+        // atualizamos as globais com as informaçoes do objeto a ser desenhado a seguir (cubo)
+
+        current_name = (char*)spinning_cube.getName();
+        current_id = spinning_cube.getId();
+        current_position = spinning_cube.getPosition();
+
+           // transformaçoes para colcar o cubo no lugar certo
+        //spinning cube
+        model = Matrix_Translate(current_position.x, current_position.y, current_position.z)
+                * Matrix_Scale(0.1,0.1,0.1)
+                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
+
+        // atualizando a bbox do cubo com sua posiçao atual
+        glm::vec4 cubo_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+        glm::vec4 cubo_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+        //desenhando o cubo na tela
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, current_id);
+        DrawVirtualObject(current_name);
+
+
         current_name = (char*)vaca_inicial.getName();
         current_id = vaca_inicial.getId();
+        current_position = vaca_inicial.getPosition();
+        float moving = vaca_inicial.move(current_position);
 
         //First cow
-          model = Matrix_Translate(0.0f,0.0f,0.0f)
+        model = Matrix_Translate(moving,current_position.y,current_position.z)
                 * Matrix_Rotate_X(g_AngleX)
                 * Matrix_Rotate_Y(g_AngleY)
                 * Matrix_Rotate_Z(g_AngleZ);
-          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+
+        //atualizando a posiçao da vaca;
+        glm::vec4 vaca_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+        glm::vec4 vaca_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+
+        if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
+                               cubo_bbox_min,cubo_bbox_max))
+        {
+            printf("AAAAAAAAAAAAAAAA");
+        }
+
+
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, current_id);
         DrawVirtualObject(current_name);
 
@@ -509,17 +550,6 @@ int main(int argc, char* argv[])
           glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow"); */
-
-
-
-
-        // Spinning cube
-        model = Matrix_Translate(47.0f,0.0f,26.5f)
-                * Matrix_Scale(0.1,0.1,0.1)
-                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, CUBE);
-        DrawVirtualObject("cube");
 
 
         //Floor
@@ -865,6 +895,17 @@ int main(int argc, char* argv[])
     // Fim do programa
     return 0;
 }
+
+///// ok ok ok ok ko
+
+//teste de colisao cubo-cubo
+bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &bbox_min2, glm::vec4 &bbox_max2)
+{
+    return (bbox_min1.x <= bbox_max2.x && bbox_max1.x >= bbox_min2.x) &&
+           (bbox_min1.y <= bbox_max2.y && bbox_max1.y >= bbox_min2.y) &&
+           (bbox_min1.z <= bbox_max2.z && bbox_max1.z >= bbox_min2.z);
+}
+
 
 // Função que carrega uma imagem para ser utilizada como textura
 void LoadTextureImage(const char* filename)
