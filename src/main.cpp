@@ -211,7 +211,9 @@ int a_player_moving = 0;
 int d_player_moving = 0;
 int w_player_moving = 0;
 int s_player_moving = 0;
-/* END MINE */
+
+//Tag de gameover/acabar o jogo
+bool gameover = false;
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
@@ -288,9 +290,10 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/scifi.jpg");      // TextureImage0
-    LoadTextureImage("../../data/lizzard.jpg"); // TextureImage1
+    LoadTextureImage("../../data/keyd.jpg");
     LoadTextureImage("../../data/door.jpg");
-    LoadTextureImage("../../data/key.jpg");
+    LoadTextureImage("../../data/lizzard.jpg"); // TextureImage1
+
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
 
@@ -371,7 +374,11 @@ int main(int argc, char* argv[])
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
         float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
-        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+//trials
+      // gameover =true;
+       if(gameover == false)
+       {
+            // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
         glm::vec4 camera_view_vector = glm::vec4(x,y,z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
@@ -444,7 +451,7 @@ int main(int argc, char* argv[])
         #define CUBE 8
 
         #define DOOR 9
-        #define FLOORKEY 10
+        #define KEYF 10
 
 
         //First cow
@@ -530,9 +537,9 @@ int main(int argc, char* argv[])
 
 
        //Front wall / Left Wall From Second hallway
-        model = Matrix_Translate(28.0f,2.0f,8.0f)
+        model = Matrix_Translate(28.0f,2.0f,7.84f)
                   * Matrix_Scale(1.0f,4.0f, 16.0f)
-                  *Matrix_Rotate_Z(20.44f);
+                  *Matrix_Rotate_Z(20.4232f);
 
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, THREEWALL);
@@ -622,13 +629,13 @@ int main(int argc, char* argv[])
         model = Matrix_Translate(41.5f,-1.0f,25.0f)
                 * Matrix_Scale(12.0f, 1.0f, 4.0f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOORKEY);
+        glUniform1i(object_id_uniform, KEYF);
         DrawVirtualObject("plane");
 
 
          //Left wall
-        model = Matrix_Translate(48.0f,2.0f,23.8f)
-              * Matrix_Rotate_X(20.45f)
+        model = Matrix_Translate(47.93f,2.0f,23.85f)
+              * Matrix_Rotate_X(20.44f)
               * Matrix_Scale(20.0f, 1.0f, 4.0f); //
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, ONEWALL);
@@ -705,6 +712,83 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane"); */ //Plano original
+       }
+       else if(gameover == true)
+       {
+            // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+
+        // Computamos a matriz "View" utilizando os parâmetros da câmera para
+        // definir o sistema de coordenadas da câmera.  Veja slide 179 do
+        // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+        glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+
+        // Agora computamos a matriz de Projeção.
+        glm::mat4 projection;
+
+        // Note que, no sistema de coordenadas da câmera, os planos near e far
+        // estão no sentido negativo! Veja slides 191-194 do documento
+        // "Aula_09_Projecoes.pdf".
+        float nearplane = -0.1f;  // Posição do "near plane"
+        float farplane  = -10.0f; // Posição do "far plane"
+
+        if (g_UsePerspectiveProjection)
+        {
+            // Projeção Perspectiva.
+            // Para definição do field of view (FOV), veja slide 228 do
+            // documento "Aula_09_Projecoes.pdf".
+            float field_of_view = 3.141592 / 3.0f;
+            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+        }
+        else
+        {
+            // Projeção Ortográfica.
+            // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
+            // veja slide 243 do documento "Aula_09_Projecoes.pdf".
+            // Para simular um "zoom" ortográfico, computamos o valor de "t"
+            // utilizando a variável g_CameraDistance.
+            float t = 1.5f*g_CameraDistance/2.5f;
+            float b = -t;
+            float r = t*g_ScreenRatio;
+            float l = -r;
+            projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
+        }
+
+        glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
+
+        // Enviamos as matrizes "view" e "projection" para a placa de vídeo
+        // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
+        // efetivamente aplicadas em todos os pontos.
+        glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
+        glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+
+        #define SPHERE 0
+        #define BUNNY  1
+        #define PLANEOVER  2
+        #define COW    3
+        #define KEYF 10
+
+        model = Matrix_Translate(0.0f,0.0f,0.0f)
+                * Matrix_Rotate_X(g_AngleX)
+                * Matrix_Rotate_Y(g_AngleY)
+                * Matrix_Rotate_Z(g_AngleZ);
+          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Desenhamos o plano do chão
+        model = Matrix_Translate(-2.0f,0.0f,0.0f)
+        * Matrix_Rotate_Z(-20.4232f)
+        * Matrix_Scale(1.0f,10.0f,3.0f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, PLANEOVER);
+        DrawVirtualObject("plane");
+
+       }
 
 
 

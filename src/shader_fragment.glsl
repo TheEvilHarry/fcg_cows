@@ -30,7 +30,8 @@ uniform mat4 projection;
 
 #define CUBE 8
 #define DOOR 9
-#define FLOORKEY 10
+#define KEYF 10
+#define PLANEOVER 11
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -172,10 +173,15 @@ void main()
         U = texcoords.x;
         V = texcoords.y;
     }
-    else if (object_id == FLOORKEY)
+    else if (object_id == KEYF)
     {
         U = texcoords.x;
         V = texcoords.y;
+    }
+    else if(object_id == PLANEOVER)
+    {
+         U = texcoords.x;
+         V = texcoords.y;
     }
 
 
@@ -195,9 +201,9 @@ void main()
      {
          Kd0 = texture(TextureImage2, vec2(U,V)).rgb;
      }
-     else if (object_id== FLOORKEY)
+     else if (object_id == KEYF)
      {
-         Kd0 = texture(TextureImage3, vec2(U,V)).rgb;
+         Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
      }
 
 
