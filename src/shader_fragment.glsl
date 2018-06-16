@@ -75,6 +75,18 @@ void main()
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
 
+        // Vetor que define o sentido da reflexão especular ideal.
+    vec4 r = -l + 2 * n * dot(n,l); // PREENCHA AQUI o vetor de reflexão especular ideal
+
+
+    //Vetor h, o half-vector entre v e l. (Usado para a reflexão Blinn-Phong).
+    vec4 h = normalize(v + l);
+
+    vec3 Kd; // Refletância difusa
+    vec3 Ks; // Refletância especular
+    vec3 Ka; // Refletância ambiente
+    float q; // Expoente especular para o modelo de iluminação de Phong
+
     // Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
@@ -138,6 +150,7 @@ void main()
     }
     else if (object_id == COW)
     {
+        /*
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
 
@@ -150,7 +163,7 @@ void main()
         U = (position_model.x - minx)/(maxx - minx);
 
 
-        V = (position_model.y - miny)/(maxy - miny);
+        V = (position_model.y - miny)/(maxy - miny);*/
     }
     else if ( object_id == PLANE )
     {
@@ -186,16 +199,21 @@ void main()
 
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-
-     vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+    vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
 
      if(object_id==COW)
      {
-          Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+        Kd = vec3(0.85,0.6,0.1);
+        Ks = vec3(0.8,0.8,0.8);
+        Ka = vec3(0.425,0.3,0.05);
+        q = 80.0;
      }
      else if (object_id==CUBE)
      {
-        Kd0 = vec3(0.8,0.4,0.08);
+        Kd = vec3(0.8,0.4,0.08);
+        Ks = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.4,0.2,0.04);
+        q = 1.0;
      }
      else if (object_id==DOOR)
      {
@@ -213,7 +231,27 @@ void main()
 
 
 
-    color = Kd0 * (lambert + 0.01);
+        // Equação de Iluminação
+    if(object_id==CUBE){
+        vec3 I = vec3(1.0,1.0,1.0);
+        vec3 Ia = vec3(0.4,0.4,0.4);
+        vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l));
+        vec3 ambient_term = Ka * Ia;
+        vec3 phong_specular_term = Ks * I * max(0,pow(dot(r,v), q));
+        color = lambert_diffuse_term + ambient_term + phong_specular_term;
+    }
+    else if(object_id==COW)
+    {
+        vec3 I = vec3(1.0,1.0,1.0);
+        vec3 Ia = vec3(0.4,0.4,0.4);
+        vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l));
+        vec3 ambient_term = Ka * Ia;
+        vec3 phong_specular_term = Ks * I * max(0,pow(dot(n,h), q));
+        color = lambert_diffuse_term + ambient_term + phong_specular_term;
+    }
+    else{
+        color = Kd0 * (lambert + 0.01);
+    }
 
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
