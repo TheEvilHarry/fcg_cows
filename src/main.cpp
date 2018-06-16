@@ -312,9 +312,11 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/scifi.jpg");      // TextureImage0
-    LoadTextureImage("../../data/keyd.jpg");
-    LoadTextureImage("../../data/door.jpg");
     LoadTextureImage("../../data/lizzard.jpg"); // TextureImage1
+    LoadTextureImage("../../data/door.jpg");
+    LoadTextureImage("../../data/keyd.jpg");
+    LoadTextureImage("../../data/ateyou.jpg");
+    LoadTextureImage("../../data/dead.jpg");
 
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
@@ -380,6 +382,76 @@ int main(int argc, char* argv[])
         glUseProgram(program_id);
         // implementar a camera look at aqui
 
+        float r = g_CameraDistance;
+        float y = r*sin(g_CameraPhi);
+        float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+
+         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+
+        // Computamos a matriz "View" utilizando os parâmetros da câmera para
+        // definir o sistema de coordenadas da câmera.  Veja slide 179 do
+        // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+        glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+
+        // Agora computamos a matriz de Projeção.
+        glm::mat4 projection;
+
+        // Note que, no sistema de coordenadas da câmera, os planos near e far
+        // estão no sentido negativo! Veja slides 191-194 do documento
+        // "Aula_09_Projecoes.pdf".
+        float nearplane = -0.1f;  // Posição do "near plane"
+        float farplane  = -10.0f; // Posição do "far plane"
+
+        if (g_UsePerspectiveProjection)
+        {
+            // Projeção Perspectiva.
+            // Para definição do field of view (FOV), veja slide 228 do
+            // documento "Aula_09_Projecoes.pdf".
+            float field_of_view = 3.141592 / 3.0f;
+            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+        }
+        else
+        {
+            // Projeção Ortográfica.
+            // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
+            // veja slide 243 do documento "Aula_09_Projecoes.pdf".
+            // Para simular um "zoom" ortográfico, computamos o valor de "t"
+            // utilizando a variável g_CameraDistance.
+            float t = 1.5f*g_CameraDistance/2.5f;
+            float b = -t;
+            float r = t*g_ScreenRatio;
+            float l = -r;
+            projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
+        }
+
+        glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
+
+        // Enviamos as matrizes "view" e "projection" para a placa de vídeo
+        // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
+        // efetivamente aplicadas em todos os pontos.
+        glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
+        glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+
+        #define SPHERE 0
+        #define BUNNY  1
+
+        #define COW    3
+
+
+        model = Matrix_Translate(0.0f,0.0f,0.0f)
+                * Matrix_Rotate_X(g_AngleX)
+                * Matrix_Rotate_Y(g_AngleY)
+                * Matrix_Rotate_Z(g_AngleZ);
+          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
 
 
         char buffer[80];
@@ -397,13 +469,25 @@ int main(int argc, char* argv[])
     {
         // Aqui executamos as operações de renderização
 
+
         // Definimos a cor do "fundo" do framebuffer como branco.  Tal cor é
         // definida como coeficientes RGBA: Red, Green, Blue, Alpha; isto é:
         // Vermelho, Verde, Azul, Alpha (valor de transparência).
         // Conversaremos sobre sistemas de cores nas aulas de Modelos de Iluminação.
         //
         //           R     G     B     A
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+
+
+
+
+//trials
+       //gameover =true;
+       if(gameover == false)
+       {
+
+
+           glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
         // e também resetamos todos os pixels do Z-buffer (depth buffer).
@@ -422,10 +506,9 @@ int main(int argc, char* argv[])
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
         float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
-//trials
-      // gameover =true;
-       if(gameover == false)
-       {
+
+
+
             // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
         glm::vec4 camera_view_vector = glm::vec4(x,y,z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
@@ -588,10 +671,10 @@ int main(int argc, char* argv[])
         DrawVirtualObject("plane");
 
 
-        //Floor 2
-        model = Matrix_Translate(24.2f,-1.0f,12.0f)
+         //Floor 2
+        model = Matrix_Translate(24.2f,-1.0f,12.5f)
                 *Matrix_Rotate_Y(20.45f)
-                * Matrix_Scale(16.5f, 1.0f, 5.0f);
+                * Matrix_Scale(16.5f, 1.0f, 5.5f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, FLOOR);
         DrawVirtualObject("plane");
@@ -616,11 +699,12 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, FLOOR);
         DrawVirtualObject("plane");
 
-        //Front Wall - Left Wall of Second Hallway
+        //Second Hallway
+
+      //  Ceilling
         model = Matrix_Translate(23.5f,5.0f,12.0f)
                 *Matrix_Rotate_Z(40.897f)
                 *Matrix_Rotate_Y(20.45f)
-
                 * Matrix_Scale(16.5f, 1.0f, 5.0f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, FLOOR);
@@ -656,7 +740,8 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, ONEWALL);
         DrawVirtualObject("plane");
 
-         model = Matrix_Translate(3.35f,-1.0f,14.5f)
+        //Door Hallway floor
+        model = Matrix_Translate(3.35f,-1.0f,14.5f)
                 * Matrix_Scale(16.0f, 1.0f, 4.0f);
         glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
         glUniform1i(object_id_uniform, FLOOR);
@@ -778,6 +863,27 @@ int main(int argc, char* argv[])
        }
        else if(gameover == true)
        {
+
+         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+        // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
+        // e também resetamos todos os pixels do Z-buffer (depth buffer).
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
+        // os shaders de vértice e fragmentos).
+        glUseProgram(program_id);
+
+        // Computamos a posição da câmera utilizando coordenadas esféricas.  As
+        // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
+        // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
+        // e ScrollCallback().
+        float r = g_CameraDistance;
+        float y = r*sin(g_CameraPhi);
+        float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+
+
             // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
         glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
@@ -829,18 +935,17 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-        #define SPHERE 0
-        #define BUNNY  1
-        #define PLANEOVER  2
-        #define COW    3
-        #define KEYF 10
+        #define PLANEOVER  11
+
+
+        #define OVERCOW 12
 
         model = Matrix_Translate(0.0f,0.0f,0.0f)
                 * Matrix_Rotate_X(g_AngleX)
                 * Matrix_Rotate_Y(g_AngleY)
                 * Matrix_Rotate_Z(g_AngleZ);
           glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, COW);
+        glUniform1i(object_id_uniform, OVERCOW);
         DrawVirtualObject("cow");
 
         // Desenhamos o plano do chão
@@ -1041,6 +1146,9 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(program_id, "TextureImage0"), 0);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage1"), 1);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage2"), 2);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 3);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 4);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
     glUseProgram(0);
 }
 

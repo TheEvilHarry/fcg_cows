@@ -31,7 +31,10 @@ uniform mat4 projection;
 #define CUBE 8
 #define DOOR 9
 #define KEYF 10
+
 #define PLANEOVER 11
+#define OVERCOW 12
+
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -43,6 +46,8 @@ uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
+uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage5;;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -196,6 +201,22 @@ void main()
          U = texcoords.x;
          V = texcoords.y;
     }
+    else if(object_id == OVERCOW)
+    {
+       float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        U = (position_model.x - minx)/(maxx - minx);
+
+
+        V = (position_model.y - miny)/(maxy - miny);
+    }
 
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
@@ -221,8 +242,17 @@ void main()
      }
      else if (object_id == KEYF)
      {
-         Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+         Kd0 = texture(TextureImage3, vec2(U,V)).rgb;
      }
+     else if (object_id == OVERCOW)
+     {
+         Kd0 = texture(TextureImage4, vec2(U,V)).rgb;
+     }
+     else if(object_id == PLANEOVER)
+     {
+         Kd0 = texture(TextureImage5, vec2(U,V)).rgb;
+     }
+
 
 
 
@@ -249,6 +279,7 @@ void main()
         vec3 phong_specular_term = Ks * I * max(0,pow(dot(n,h), q));
         color = lambert_diffuse_term + ambient_term + phong_specular_term;
     }
+
     else{
         color = Kd0 * (lambert + 0.01);
     }
