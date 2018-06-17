@@ -131,8 +131,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 // ##### coisas adicionadas por nós #####
 bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &bbox_min2, glm::vec4 &bbox_max2);
 
-Item vaca_inicial(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "cow", COW);
-Item spinning_cube(glm::vec4(3.0f, 0.0f, 0.0f, 0.0f), "cube", CUBE);
+Item vaca_inicial(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "cow", COW, true);
+//Item spinning_cube(glm::vec4(3.0f, 0.0f, 0.0f, 0.0f), "cube", CUBE);
 bool menu;
 char* current_name;
 int current_id;
@@ -142,8 +142,8 @@ glm::vec4 current_position;
 bool gameover = false;
 
 bool wingame = false;
-float ata = 0.0f;
-int control_cow1 = 0;
+
+
 
 
 
@@ -603,8 +603,6 @@ int main(int argc, char* argv[])
 
             // #### PAREDES COM BBOXES:
 
-            current_name = (char*)"plane";
-
             Wall left_wall;
 
 			left_wall.posX = 8.0f;
@@ -735,13 +733,13 @@ int main(int argc, char* argv[])
 
             // atualizamos as globais com as informaçoes do objeto a ser desenhado a seguir (cubo)
 
-            current_name = (char*)spinning_cube.getName();
-            current_id = spinning_cube.getId();
-            current_position = spinning_cube.getPosition();
+            current_name = (char*)"cube";
+            //current_id = spinning_cube.getId();
+            //current_position = spinning_cube.getPosition();
 
             // transformaçoes para colcar o cubo no lugar certo
             //spinning cube
-            model = Matrix_Translate(current_position.x, current_position.y, current_position.z)
+            model = Matrix_Translate(3.0f, 0.0f, 0.0f)
                     * Matrix_Scale(0.1,0.1,0.1)
                     * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
 
@@ -751,19 +749,21 @@ int main(int argc, char* argv[])
 
             //desenhando o cubo na tela
             glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(object_id_uniform, current_id);
-            DrawVirtualObject(current_name);
+            glUniform1i(object_id_uniform, CUBE);
+            DrawVirtualObject("cube");
 
 
             current_name = (char*)vaca_inicial.getName();
             current_id = vaca_inicial.getId();
             current_position = vaca_inicial.getPosition();
-            float moving = vaca_inicial.move(current_position,control_cow1);
+            //static int control_cow = vaca_inicial.getControl();
+
+            float moving = vaca_inicial.move(current_position);
 
             //First cow
             model = Matrix_Translate(moving,current_position.y,current_position.z)
                     * Matrix_Rotate_X(g_AngleX)
-                    * Matrix_Rotate_Y(ata)
+                    * Matrix_Rotate_Y(g_AngleY)
                     * Matrix_Rotate_Z(g_AngleZ);
 
             //atualizando a posiçao da vaca;
@@ -771,13 +771,12 @@ int main(int argc, char* argv[])
             glm::vec4 vaca_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
 
             glm::vec4 vaca_position = glm::vec4(moving,current_position.y,current_position.z,0.0f);
+            vaca_inicial.setPosition(vaca_position);
 
             if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
                                    cubo_bbox_min,cubo_bbox_max))
             {
-                ata =-47.39f;
-                control_cow1 = 1;
-                glfwSetTime (0.0d);
+                vaca_inicial.setControl(false);
             }
 
             if (CheckWallColision(back_wall,vaca_position))

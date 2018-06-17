@@ -9,21 +9,24 @@ using namespace glm;
 
 class Item {
 	vec4 position;
-	vec3 bbox_min, bbox_max;
+	vec4 bbox_min, bbox_max;
 	const char* name;
 	int id;
+	bool control;
 	
 	public:
-	Item(vec4 position, const char* name, int id);
+	Item(vec4 position, const char* name, int id, bool control);
 	vec3 getBBoxMin() const;
 	vec3 getBBoxMax() const;
-    void setBBoxMin(vec3 n_bbox_min);
-    void setBBoxMax(vec3 n_bbox_max);
+    void setBBoxMin(vec4 n_bbox_min);
+    void setBBoxMax(vec4 n_bbox_max);
     vec4 getPosition() const;
 	void setPosition(vec4 newPosition);
-    float move(vec4 direction,int controlcow);
+    float move(vec4 direction);
 	char const * getName();
 	int getId();
+	bool getControl();
+	void setControl(bool new_control);
 };
 
 #endif
