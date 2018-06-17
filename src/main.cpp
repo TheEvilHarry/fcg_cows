@@ -136,7 +136,7 @@ Item spinning_cube(glm::vec4(3.0f, 0.0f, 0.0f, 0.0f), "cube", CUBE);
 bool menu;
 char* current_name;
 int current_id;
-vec4 current_position;
+glm::vec4 current_position;
 
 //Tag de gameover/acabar o jogo
 bool gameover = false;
@@ -162,6 +162,24 @@ struct SceneObject
     glm::vec3    bbox_min; // Axis-Aligned Bounding Box do objeto
     glm::vec3    bbox_max;
 };
+
+struct Wall
+{
+    float posX = 0.0f;
+    float posY = 0.0f;
+    float posZ = 0.0f;
+
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    float scaleZ = 1.0f;
+
+    float rotateX = 0.0f;
+    float rotateY = 0.0f;
+    float rotateZ = 0.0f;
+};
+void DrawWall (Wall new_wall);
+bool CheckWallColision (Wall wall, glm::vec4 position);
+
 
 // Abaixo definimos variáveis globais utilizadas em várias funções do código.
 
@@ -609,7 +627,20 @@ int main(int argc, char* argv[])
             glUniform1i(object_id_uniform, ONEWALL);
             DrawVirtualObject("plane");
 
+            Wall back_wall;
 
+            back_wall.posX = -11.5f;
+            back_wall.posY = 1.0f;
+
+            back_wall.scaleX = 1.0f;
+            back_wall.scaleY = 2.5f;
+            back_wall.scaleZ = 4.0f;
+
+            back_wall.rotateZ = -20.44f;
+
+            DrawWall(back_wall);
+
+            /*
             //Back wall
             model = Matrix_Translate(-11.5f,1.0f,0.0f)
                     * Matrix_Scale(1.0f, 2.5f, 4.0f)
@@ -621,7 +652,7 @@ int main(int argc, char* argv[])
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, THREEWALL);
             DrawVirtualObject("plane");
-
+            */
 
 //          Front wall / Left Wall From Second hallway
             model = Matrix_Translate(28.0f,2.0f,7.84f)
@@ -675,6 +706,7 @@ int main(int argc, char* argv[])
             glm::vec4 vaca_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
             glm::vec4 vaca_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
 
+            glm::vec4 vaca_position = glm::vec4(moving,current_position.y,current_position.z,0.0f);
 
             if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
                                    cubo_bbox_min,cubo_bbox_max))
@@ -684,8 +716,7 @@ int main(int argc, char* argv[])
                 glfwSetTime (0.0d);
             }
 
-            if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
-                                   f_wall_bbox_min,f_wall_bbox_max))
+            if (CheckWallColision(back_wall,vaca_position))
             {
                 printf("BBBBBBBBBBBBBBBB");
             }
@@ -1039,6 +1070,35 @@ bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &b
            (bbox_min1.z <= bbox_max2.z && bbox_max1.z >= bbox_min2.z);
 }
 
+//teste da funçao para desenhar as paredes
+void DrawWall (Wall new_wall)
+{
+    glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
+
+    model = Matrix_Translate(new_wall.posX,new_wall.posY,new_wall.posZ)
+            * Matrix_Scale(new_wall.scaleX,new_wall.scaleY,new_wall.scaleZ)
+            * Matrix_Rotate_X(new_wall.rotateX)
+            * Matrix_Rotate_Y(new_wall.rotateY)
+            * Matrix_Rotate_Z(new_wall.rotateZ);
+
+    glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+    glUniform1i(object_id_uniform, FLOOR);
+    DrawVirtualObject("plane");
+}
+
+//teste cubo-plano
+bool CheckWallColision (Wall wall, glm::vec4 position)
+{
+    float wall_1stX = wall.posX - (wall.scaleX);
+    float wall_1stZ = wall.posZ - (wall.scaleZ);
+    float wall_2ndX = wall.posX + (wall.scaleX);
+    float wall_2ndZ = wall.posZ + (wall.scaleZ);
+
+    if ((position.x >= wall_1stX && position.x <= wall_2ndX) &&
+        (position.z >= wall_1stZ && position.z <= wall_2ndZ))
+        return true;
+    else return false;
+}
 
 // Função que carrega uma imagem para ser utilizada como textura
 void LoadTextureImage(const char* filename)
