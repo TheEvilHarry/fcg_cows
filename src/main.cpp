@@ -137,6 +137,14 @@ bool menu;
 char* current_name;
 int current_id;
 vec4 current_position;
+
+//Tag de gameover/acabar o jogo
+bool gameover = false;
+float ata = 0.0f;
+int control_cow1 = 0;
+
+
+
 // ##### end #####
 
 
@@ -234,8 +242,7 @@ int d_player_moving = 0;
 int w_player_moving = 0;
 int s_player_moving = 0;
 
-//Tag de gameover/acabar o jogo
-bool gameover = false;
+
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
@@ -331,15 +338,15 @@ int main(int argc, char* argv[])
     BuildTrianglesAndAddToVirtualScene(&cubemodel);
 
 
-   /* ObjModel spheremodel("../../data/sphere.obj");
-    ComputeNormals(&spheremodel);
-    BuildTrianglesAndAddToVirtualScene(&spheremodel);
+    /* ObjModel spheremodel("../../data/sphere.obj");
+     ComputeNormals(&spheremodel);
+     BuildTrianglesAndAddToVirtualScene(&spheremodel);
 
-    ObjModel bunnymodel("../../data/bunny.obj");
-    ComputeNormals(&bunnymodel);
-    BuildTrianglesAndAddToVirtualScene(&bunnymodel);
+     ObjModel bunnymodel("../../data/bunny.obj");
+     ComputeNormals(&bunnymodel);
+     BuildTrianglesAndAddToVirtualScene(&bunnymodel);
 
-     */
+      */
 
     ObjModel planemodel("../../data/plane.obj");
     ComputeNormals(&planemodel);
@@ -387,7 +394,7 @@ int main(int argc, char* argv[])
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
         float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
-         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
         glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
         glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
@@ -438,17 +445,17 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-        #define SPHERE 0
-        #define BUNNY  1
+#define SPHERE 0
+#define BUNNY  1
 
-        #define COW    3
+#define COW    3
 
 
         model = Matrix_Translate(0.0f,0.0f,0.0f)
                 * Matrix_Rotate_X(g_AngleX)
                 * Matrix_Rotate_Y(g_AngleY)
                 * Matrix_Rotate_Z(g_AngleZ);
-          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
@@ -482,481 +489,502 @@ int main(int argc, char* argv[])
 
 
 //trials
-       //gameover =true;
-       if(gameover == false)
-       {
+        //gameover =true;
+        if(gameover == false)
+        {
 
 
-           glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
-        // e também resetamos todos os pixels do Z-buffer (depth buffer).
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
+            // e também resetamos todos os pixels do Z-buffer (depth buffer).
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
-        // os shaders de vértice e fragmentos).
-        glUseProgram(program_id);
+            // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
+            // os shaders de vértice e fragmentos).
+            glUseProgram(program_id);
 
-        // Computamos a posição da câmera utilizando coordenadas esféricas.  As
-        // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
-        // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
-        // e ScrollCallback().
-        float r = g_CameraDistance;
-        float y = r*sin(g_CameraPhi);
-        float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+            // Computamos a posição da câmera utilizando coordenadas esféricas.  As
+            // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
+            // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
+            // e ScrollCallback().
+            float r = g_CameraDistance;
+            float y = r*sin(g_CameraPhi);
+            float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
+            float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
 
 
 
             // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
-        // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::vec4 camera_view_vector = glm::vec4(x,y,z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
-        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+            // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+            glm::vec4 camera_view_vector = glm::vec4(x,y,z, 0.0f); // Vetor "view", sentido para onde a câmera está virada
+            glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
-        // Get the W and U to use in moving_player
-        // these vectors are globals, but pass by parameter just to avoid global
-        // use
-        w = -camera_view_vector;
-        w = w/norm(w);
-        u = crossproduct(camera_up_vector, w);
-        u = u/norm(u);
+            // Get the W and U to use in moving_player
+            // these vectors are globals, but pass by parameter just to avoid global
+            // use
+            w = -camera_view_vector;
+            w = w/norm(w);
+            u = crossproduct(camera_up_vector, w);
+            u = u/norm(u);
 
-        moving_player(u,w);
+            moving_player(u,w);
 
-        glm::vec4 camera_position_c  = player_pos; // Ponto "c", centro da câmera
+            glm::vec4 camera_position_c  = player_pos; // Ponto "c", centro da câmera
 
-        // Computamos a matriz "View" utilizando os parâmetros da câmera para
-        // definir o sistema de coordenadas da câmera.  Veja slide 179 do
-        // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+            // Computamos a matriz "View" utilizando os parâmetros da câmera para
+            // definir o sistema de coordenadas da câmera.  Veja slide 179 do
+            // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+            glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
 
-        // Agora computamos a matriz de Projeção.
-        glm::mat4 projection;
+            // Agora computamos a matriz de Projeção.
+            glm::mat4 projection;
 
-        // Note que, no sistema de coordenadas da câmera, os planos near e far
-        // estão no sentido negativo! Veja slides 191-194 do documento
-        // "Aula_09_Projecoes.pdf".
-        float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -400.0f; // Posição do "far plane"
+            // Note que, no sistema de coordenadas da câmera, os planos near e far
+            // estão no sentido negativo! Veja slides 191-194 do documento
+            // "Aula_09_Projecoes.pdf".
+            float nearplane = -0.1f;  // Posição do "near plane"
+            float farplane  = -400.0f; // Posição do "far plane"
 
-        if (g_UsePerspectiveProjection)
-        {
-            // Projeção Perspectiva.
-            // Para definição do field of view (FOV), veja slide 228 do
-            // documento "Aula_09_Projecoes.pdf".
-            float field_of_view = 3.141592 / 3.0f;
-            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+            if (g_UsePerspectiveProjection)
+            {
+                // Projeção Perspectiva.
+                // Para definição do field of view (FOV), veja slide 228 do
+                // documento "Aula_09_Projecoes.pdf".
+                float field_of_view = 3.141592 / 3.0f;
+                projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+            }
+            else
+            {
+                // Projeção Ortográfica.
+                // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
+                // veja slide 243 do documento "Aula_09_Projecoes.pdf".
+                // Para simular um "zoom" ortográfico, computamos o valor de "t"
+                // utilizando a variável g_CameraDistance.
+                float t = 1.5f*g_CameraDistance/2.5f;
+                float b = -t;
+                float r = t*g_ScreenRatio;
+                float l = -r;
+                projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
+            }
+
+            glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
+
+            // Enviamos as matrizes "view" e "projection" para a placa de vídeo
+            // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
+            // efetivamente aplicadas em todos os pontos.
+            glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
+            glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+
+
+            // #### PAREDES COM BBOXES:
+
+            current_name = (char*)"plane";
+
+
+            //Left wall
+            model = Matrix_Translate(8.0f,2.0f,-3.7f)
+                    * Matrix_Rotate_X(20.45f)
+                    * Matrix_Scale(20.0f, 1.0f, 4.0f); //
+
+            glm::vec4 l_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 l_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");
+
+
+            //Right wall
+            model = Matrix_Translate(4.2f,2.0f,4.0f)
+                    * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
+                    * Matrix_Rotate_X(-20.4232f)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+
+            glm::vec4 r_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 r_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");
+
+
+            //Back wall
+            model = Matrix_Translate(-11.5f,1.0f,0.0f)
+                    * Matrix_Scale(1.0f, 2.5f, 4.0f)
+                    * Matrix_Rotate_Z(-20.44f);
+
+            glm::vec4 b_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 b_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, THREEWALL);
+            DrawVirtualObject("plane");
+
+
+//          Front wall / Left Wall From Second hallway
+            model = Matrix_Translate(28.0f,2.0f,7.84f)
+                    * Matrix_Scale(1.0f,4.0f, 16.0f)
+                    * Matrix_Rotate_Z(20.4232f);
+
+            glm::vec4 f_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 f_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, THREEWALL);
+            DrawVirtualObject("plane");
+
+            //#######################
+
+
+            // atualizamos as globais com as informaçoes do objeto a ser desenhado a seguir (cubo)
+
+            current_name = (char*)spinning_cube.getName();
+            current_id = spinning_cube.getId();
+            current_position = spinning_cube.getPosition();
+
+            // transformaçoes para colcar o cubo no lugar certo
+            //spinning cube
+            model = Matrix_Translate(current_position.x, current_position.y, current_position.z)
+                    * Matrix_Scale(0.1,0.1,0.1)
+                    * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
+
+            // atualizando a bbox do cubo com sua posiçao atual
+            glm::vec4 cubo_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 cubo_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            //desenhando o cubo na tela
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+
+            current_name = (char*)vaca_inicial.getName();
+            current_id = vaca_inicial.getId();
+            current_position = vaca_inicial.getPosition();
+            float moving = vaca_inicial.move(current_position,control_cow1);
+
+            //First cow
+            model = Matrix_Translate(moving,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(g_AngleX)
+                    * Matrix_Rotate_Y(ata)
+                    * Matrix_Rotate_Z(g_AngleZ);
+
+            //atualizando a posiçao da vaca;
+            glm::vec4 vaca_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+
+            if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
+                                   cubo_bbox_min,cubo_bbox_max))
+            {
+                ata =-47.39f;
+                control_cow1 = 1;
+                glfwSetTime (0.0d);
+            }
+
+            if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
+                                   f_wall_bbox_min,f_wall_bbox_max))
+            {
+                printf("BBBBBBBBBBBBBBBB");
+            }
+
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+
+
+
+            ////////////////////////////////////////
+
+            //Floor
+            model = Matrix_Translate(3.35f,-1.0f,0.0f)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f);
+
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+            //roomPlanes[0] = getPlaneEquation(model);
+
+            //Floor 2
+            model = Matrix_Translate(24.2f,-1.0f,12.5f)
+                    *Matrix_Rotate_Y(20.45f)
+                    * Matrix_Scale(16.5f, 1.0f, 5.5f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+            //roomPlanes[0] = getPlaneEquation(model);
+
+
+            //Ceiling
+            model = Matrix_Translate(4.0f,4.0f,0.0f)
+                    *Matrix_Rotate_Z(40.897)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+
+            //Second Hallway
+
+            //  Ceilling
+            model = Matrix_Translate(23.5f,5.0f,12.0f)
+                    *Matrix_Rotate_Z(40.897f)
+                    *Matrix_Rotate_Y(20.45f)
+                    * Matrix_Scale(16.5f, 1.0f, 5.0f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+
+
+            model = Matrix_Translate(20.0f,1.0f,8.0f)
+                    * Matrix_Scale(1.0f, 4.0f, 4.0f)
+                    *Matrix_Rotate_Z(-20.44f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, THREEWALL);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(20.0f,1.0f,23.0f)
+                    * Matrix_Scale(1.0f, 4.0f, 6.0f)
+                    *Matrix_Rotate_Z(-20.44f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, THREEWALL);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(4.2f,2.0f,17.0f)
+                    * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
+                    * Matrix_Rotate_X(-20.4232f)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(4.2f,2.0f,12.0f)
+                    * Matrix_Rotate_X(20.4232f)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");
+
+            //Door Hallway floor
+            model = Matrix_Translate(3.35f,-1.0f,14.5f)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(4.0f,4.0f,14.5f)
+                    *Matrix_Rotate_Z(40.897)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+
+
+
+
+            model = Matrix_Translate(35.5f,2.0f,28.55f)
+                    * Matrix_Rotate_Z(40.865f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
+                    * Matrix_Rotate_X(-20.4232f)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f); //
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");
+
+
+
+            model = Matrix_Translate(40.0f,5.9f,25.0f)
+                    *Matrix_Rotate_Z(40.897)
+                    * Matrix_Scale(16.0f, 1.0f, 4.0f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, FLOOR);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(41.5f,-1.0f,25.0f)
+                    * Matrix_Scale(12.0f, 1.0f, 4.0f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, KEYF);
+            DrawVirtualObject("plane");
+
+
+            //Left wall
+            model = Matrix_Translate(47.93f,2.0f,23.85f)
+                    * Matrix_Rotate_X(20.44f)
+                    * Matrix_Scale(20.0f, 1.0f, 4.0f); //
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(-7.0f,1.0f,13.7f)
+                    * Matrix_Scale(1.0f, 2.8f, 4.0f)
+                    *Matrix_Rotate_Z(-20.44f);
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, DOOR);
+            DrawVirtualObject("plane");
+
+            model = Matrix_Translate(50.5f,3.0f,26.5f)
+                    * Matrix_Scale(1.0f,4.0f, 3.0f)
+                    *Matrix_Rotate_Z(20.44f);
+
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, THREEWALL);
+            DrawVirtualObject("plane");
+
+
+
+
+            /*
+
+              //Left wall
+               model = Matrix_Translate(28.2f,2.0f,12.0f)
+                     * Matrix_Rotate_Y(-20.454f)
+                     * Matrix_Rotate_X(20.45f)
+                     * Matrix_Scale(20.0f, 1.0f, 4.0f); //
+               glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+               glUniform1i(object_id_uniform, ONEWALL);
+               DrawVirtualObject("plane");
+
+
+
+             model = Matrix_Translate(11.5f,1.0f,0.0f)
+                         * Matrix_Scale(1.0f, 2.5f, 4.0f)
+                         *Matrix_Rotate_Z(20.44f);
+
+               glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+               glUniform1i(object_id_uniform, THREEWALL);
+               DrawVirtualObject("plane"); */
+
+
+
+
+
+
+            /*
+
+
+               // Desenhamos o modelo do coelho
+
+            model = Matrix_Translate(1.0f,0.0f,0.0f)
+                     * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
+               glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+               glUniform1i(object_id_uniform, BUNNY);
+               DrawVirtualObject("bunny");
+
+               // Desenhamos o modelo da esfera
+
+                model = Matrix_Translate(-1.0f,0.0f,0.0f)
+                     * Matrix_Rotate_Z(0.6f)
+                     * Matrix_Rotate_X(0.2f)
+                     * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
+               glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+               glUniform1i(object_id_uniform, SPHERE);
+               DrawVirtualObject("sphere");
+
+                // Desenhamos o plano do chão
+
+                model = Matrix_Translate(0.0f,-1.1f,0.0f);
+               glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+               glUniform1i(object_id_uniform, PLANE);
+               DrawVirtualObject("plane"); */ //Plano original
         }
-        else
+        else if(gameover == true)
         {
-            // Projeção Ortográfica.
-            // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
-            // veja slide 243 do documento "Aula_09_Projecoes.pdf".
-            // Para simular um "zoom" ortográfico, computamos o valor de "t"
-            // utilizando a variável g_CameraDistance.
-            float t = 1.5f*g_CameraDistance/2.5f;
-            float b = -t;
-            float r = t*g_ScreenRatio;
-            float l = -r;
-            projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
-        }
 
-        glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
-
-        // Enviamos as matrizes "view" e "projection" para a placa de vídeo
-        // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
-        // efetivamente aplicadas em todos os pontos.
-        glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
-        glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-
-
-        // atualizamos as globais com as informaçoes do objeto a ser desenhado a seguir (cubo)
-
-        current_name = (char*)spinning_cube.getName();
-        current_id = spinning_cube.getId();
-        current_position = spinning_cube.getPosition();
-
-           // transformaçoes para colcar o cubo no lugar certo
-        //spinning cube
-        model = Matrix_Translate(current_position.x, current_position.y, current_position.z)
-                * Matrix_Scale(0.1,0.1,0.1)
-                * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
-
-        // atualizando a bbox do cubo com sua posiçao atual
-        glm::vec4 cubo_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-        glm::vec4 cubo_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
-        //desenhando o cubo na tela
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, current_id);
-        DrawVirtualObject(current_name);
-
-
-        current_name = (char*)vaca_inicial.getName();
-        current_id = vaca_inicial.getId();
-        current_position = vaca_inicial.getPosition();
-        float moving = vaca_inicial.move(current_position);
-
-        //First cow
-        model = Matrix_Translate(moving,current_position.y,current_position.z)
-                * Matrix_Rotate_X(g_AngleX)
-                * Matrix_Rotate_Y(g_AngleY)
-                * Matrix_Rotate_Z(g_AngleZ);
-
-        //atualizando a posiçao da vaca;
-        glm::vec4 vaca_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-        glm::vec4 vaca_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
-
-        if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
-                               cubo_bbox_min,cubo_bbox_max))
-        {
-            printf("AAAAAAAAAAAAAAAA");
-        }
-
-
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, current_id);
-        DrawVirtualObject(current_name);
-
-
-
-        //second cow
-
-
-    /*    glm::vec3 second_cow_position = glm::vec3(13.0f, -0.4f,0.0f);
-        glm::vec3 speed = glm::vec3(-1.0f,1.0f,1.0f);
-
-         model = Matrix_Translate(second_cow_position)
-                * Matrix_Rotate_Y(15.57f);
-          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, COW);
-        DrawVirtualObject("cow"); */
-
-
-        //Floor
-        model = Matrix_Translate(3.35f,-1.0f,0.0f)
-                * Matrix_Scale(16.0f, 1.0f, 4.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-        //roomPlanes[0] = getPlaneEquation(model);
-
-        //Left wall
-        model = Matrix_Translate(8.0f,2.0f,-3.7f)
-              * Matrix_Rotate_X(20.45f)
-              * Matrix_Scale(20.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-        //Right wall
-         model = Matrix_Translate(4.2f,2.0f,4.0f)
-              * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
-              * Matrix_Rotate_X(-20.4232f)
-              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-
-       //Back wall
-        model = Matrix_Translate(-11.5f,1.0f,0.0f)
-                  * Matrix_Scale(1.0f, 2.5f, 4.0f)
-                  *Matrix_Rotate_Z(-20.44f);
-
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, THREEWALL);
-        DrawVirtualObject("plane");
-
-
-         //Floor 2
-        model = Matrix_Translate(24.2f,-1.0f,12.5f)
-                *Matrix_Rotate_Y(20.45f)
-                * Matrix_Scale(16.5f, 1.0f, 5.5f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-        //roomPlanes[0] = getPlaneEquation(model);
-
-
-
-       //Front wall / Left Wall From Second hallway
-        model = Matrix_Translate(28.0f,2.0f,7.84f)
-                  * Matrix_Scale(1.0f,4.0f, 16.0f)
-                  *Matrix_Rotate_Z(20.4232f);
-
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, THREEWALL);
-        DrawVirtualObject("plane");
-
-         //Ceiling
-        model = Matrix_Translate(4.0f,4.0f,0.0f)
-                *Matrix_Rotate_Z(40.897)
-                * Matrix_Scale(16.0f, 1.0f, 4.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-
-        //Second Hallway
-
-      //  Ceilling
-        model = Matrix_Translate(23.5f,5.0f,12.0f)
-                *Matrix_Rotate_Z(40.897f)
-                *Matrix_Rotate_Y(20.45f)
-                * Matrix_Scale(16.5f, 1.0f, 5.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-
-
-         model = Matrix_Translate(20.0f,1.0f,8.0f)
-                  * Matrix_Scale(1.0f, 4.0f, 4.0f)
-                  *Matrix_Rotate_Z(-20.44f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, THREEWALL);
-        DrawVirtualObject("plane");
-
-        model = Matrix_Translate(20.0f,1.0f,23.0f)
-                  * Matrix_Scale(1.0f, 4.0f, 6.0f)
-                  *Matrix_Rotate_Z(-20.44f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, THREEWALL);
-        DrawVirtualObject("plane");
-
-        model = Matrix_Translate(4.2f,2.0f,17.0f)
-              * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
-              * Matrix_Rotate_X(-20.4232f)
-              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-        model = Matrix_Translate(4.2f,2.0f,12.0f)
-              * Matrix_Rotate_X(20.4232f)
-              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-        //Door Hallway floor
-        model = Matrix_Translate(3.35f,-1.0f,14.5f)
-                * Matrix_Scale(16.0f, 1.0f, 4.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-
-        model = Matrix_Translate(4.0f,4.0f,14.5f)
-                *Matrix_Rotate_Z(40.897)
-                * Matrix_Scale(16.0f, 1.0f, 4.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-
-
-
-
-        model = Matrix_Translate(35.5f,2.0f,28.55f)
-              * Matrix_Rotate_Z(40.865f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
-              * Matrix_Rotate_X(-20.4232f)
-              * Matrix_Scale(16.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-
-
-        model = Matrix_Translate(40.0f,5.9f,25.0f)
-                *Matrix_Rotate_Z(40.897)
-                * Matrix_Scale(16.0f, 1.0f, 4.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, FLOOR);
-        DrawVirtualObject("plane");
-
-        model = Matrix_Translate(41.5f,-1.0f,25.0f)
-                * Matrix_Scale(12.0f, 1.0f, 4.0f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, KEYF);
-        DrawVirtualObject("plane");
-
-
-         //Left wall
-        model = Matrix_Translate(47.93f,2.0f,23.85f)
-              * Matrix_Rotate_X(20.44f)
-              * Matrix_Scale(20.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-        model = Matrix_Translate(-7.0f,1.0f,13.7f)
-                  * Matrix_Scale(1.0f, 2.8f, 4.0f)
-                  *Matrix_Rotate_Z(-20.44f);
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, DOOR);
-        DrawVirtualObject("plane");
-
-         model = Matrix_Translate(50.5f,3.0f,26.5f)
-                  * Matrix_Scale(1.0f,4.0f, 3.0f)
-                  *Matrix_Rotate_Z(20.44f);
-
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, THREEWALL);
-        DrawVirtualObject("plane");
-
-
-
-
-     /*
-
-       //Left wall
-        model = Matrix_Translate(28.2f,2.0f,12.0f)
-              * Matrix_Rotate_Y(-20.454f)
-              * Matrix_Rotate_X(20.45f)
-              * Matrix_Scale(20.0f, 1.0f, 4.0f); //
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, ONEWALL);
-        DrawVirtualObject("plane");
-
-
-
-      model = Matrix_Translate(11.5f,1.0f,0.0f)
-                  * Matrix_Scale(1.0f, 2.5f, 4.0f)
-                  *Matrix_Rotate_Z(20.44f);
-
-        glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(object_id_uniform, THREEWALL);
-        DrawVirtualObject("plane"); */
-
-
-
-
-
-
-     /*
-
-
-        // Desenhamos o modelo do coelho
-
-     model = Matrix_Translate(1.0f,0.0f,0.0f)
-              * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, BUNNY);
-        DrawVirtualObject("bunny");
-
-        // Desenhamos o modelo da esfera
-
-         model = Matrix_Translate(-1.0f,0.0f,0.0f)
-              * Matrix_Rotate_Z(0.6f)
-              * Matrix_Rotate_X(0.2f)
-              * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, SPHERE);
-        DrawVirtualObject("sphere");
-
-         // Desenhamos o plano do chão
-
-         model = Matrix_Translate(0.0f,-1.1f,0.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, PLANE);
-        DrawVirtualObject("plane"); */ //Plano original
-       }
-       else if(gameover == true)
-       {
-
-         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-        // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
-        // e também resetamos todos os pixels do Z-buffer (depth buffer).
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
-        // os shaders de vértice e fragmentos).
-        glUseProgram(program_id);
-
-        // Computamos a posição da câmera utilizando coordenadas esféricas.  As
-        // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
-        // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
-        // e ScrollCallback().
-        float r = g_CameraDistance;
-        float y = r*sin(g_CameraPhi);
-        float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+            // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
+            // e também resetamos todos os pixels do Z-buffer (depth buffer).
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            // Pedimos para a GPU utilizar o programa de GPU criado acima (contendo
+            // os shaders de vértice e fragmentos).
+            glUseProgram(program_id);
+
+            // Computamos a posição da câmera utilizando coordenadas esféricas.  As
+            // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
+            // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
+            // e ScrollCallback().
+            float r = g_CameraDistance;
+            float y = r*sin(g_CameraPhi);
+            float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
+            float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
 
             // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
-        // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
-        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
-        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+            // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+            glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+            glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+            glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+            glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
-        // Computamos a matriz "View" utilizando os parâmetros da câmera para
-        // definir o sistema de coordenadas da câmera.  Veja slide 179 do
-        // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-        glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
+            // Computamos a matriz "View" utilizando os parâmetros da câmera para
+            // definir o sistema de coordenadas da câmera.  Veja slide 179 do
+            // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
+            glm::mat4 view = Matrix_Camera_View(camera_position_c, camera_view_vector, camera_up_vector);
 
-        // Agora computamos a matriz de Projeção.
-        glm::mat4 projection;
+            // Agora computamos a matriz de Projeção.
+            glm::mat4 projection;
 
-        // Note que, no sistema de coordenadas da câmera, os planos near e far
-        // estão no sentido negativo! Veja slides 191-194 do documento
-        // "Aula_09_Projecoes.pdf".
-        float nearplane = -0.1f;  // Posição do "near plane"
-        float farplane  = -10.0f; // Posição do "far plane"
+            // Note que, no sistema de coordenadas da câmera, os planos near e far
+            // estão no sentido negativo! Veja slides 191-194 do documento
+            // "Aula_09_Projecoes.pdf".
+            float nearplane = -0.1f;  // Posição do "near plane"
+            float farplane  = -10.0f; // Posição do "far plane"
 
-        if (g_UsePerspectiveProjection)
-        {
-            // Projeção Perspectiva.
-            // Para definição do field of view (FOV), veja slide 228 do
-            // documento "Aula_09_Projecoes.pdf".
-            float field_of_view = 3.141592 / 3.0f;
-            projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+            if (g_UsePerspectiveProjection)
+            {
+                // Projeção Perspectiva.
+                // Para definição do field of view (FOV), veja slide 228 do
+                // documento "Aula_09_Projecoes.pdf".
+                float field_of_view = 3.141592 / 3.0f;
+                projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
+            }
+            else
+            {
+                // Projeção Ortográfica.
+                // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
+                // veja slide 243 do documento "Aula_09_Projecoes.pdf".
+                // Para simular um "zoom" ortográfico, computamos o valor de "t"
+                // utilizando a variável g_CameraDistance.
+                float t = 1.5f*g_CameraDistance/2.5f;
+                float b = -t;
+                float r = t*g_ScreenRatio;
+                float l = -r;
+                projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
+            }
+
+            glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
+
+            // Enviamos as matrizes "view" e "projection" para a placa de vídeo
+            // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
+            // efetivamente aplicadas em todos os pontos.
+            glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
+            glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
+
+#define PLANEOVER  11
+
+
+#define OVERCOW 12
+
+            model = Matrix_Translate(0.0f,0.0f,0.0f)
+                    * Matrix_Rotate_X(g_AngleX)
+                    * Matrix_Rotate_Y(g_AngleY)
+                    * Matrix_Rotate_Z(g_AngleZ);
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, OVERCOW);
+            DrawVirtualObject("cow");
+
+            // Desenhamos o plano do chão
+            model = Matrix_Translate(-2.0f,0.0f,0.0f)
+                    * Matrix_Rotate_Z(-20.4232f)
+                    * Matrix_Scale(1.0f,10.0f,3.0f);
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, PLANEOVER);
+            DrawVirtualObject("plane");
+
         }
-        else
-        {
-            // Projeção Ortográfica.
-            // Para definição dos valores l, r, b, t ("left", "right", "bottom", "top"),
-            // veja slide 243 do documento "Aula_09_Projecoes.pdf".
-            // Para simular um "zoom" ortográfico, computamos o valor de "t"
-            // utilizando a variável g_CameraDistance.
-            float t = 1.5f*g_CameraDistance/2.5f;
-            float b = -t;
-            float r = t*g_ScreenRatio;
-            float l = -r;
-            projection = Matrix_Orthographic(l, r, b, t, nearplane, farplane);
-        }
-
-        glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
-
-        // Enviamos as matrizes "view" e "projection" para a placa de vídeo
-        // (GPU). Veja o arquivo "shader_vertex.glsl", onde estas são
-        // efetivamente aplicadas em todos os pontos.
-        glUniformMatrix4fv(view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
-        glUniformMatrix4fv(projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
-
-        #define PLANEOVER  11
-
-
-        #define OVERCOW 12
-
-        model = Matrix_Translate(0.0f,0.0f,0.0f)
-                * Matrix_Rotate_X(g_AngleX)
-                * Matrix_Rotate_Y(g_AngleY)
-                * Matrix_Rotate_Z(g_AngleZ);
-          glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, OVERCOW);
-        DrawVirtualObject("cow");
-
-        // Desenhamos o plano do chão
-        model = Matrix_Translate(-2.0f,0.0f,0.0f)
-        * Matrix_Rotate_Z(-20.4232f)
-        * Matrix_Scale(1.0f,10.0f,3.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, PLANEOVER);
-        DrawVirtualObject("plane");
-
-       }
 
 
 
@@ -1086,10 +1114,10 @@ void DrawVirtualObject(const char* object_name)
     // a documentação da função glDrawElements() em
     // http://docs.gl/gl3/glDrawElements.
     glDrawElements(
-        g_VirtualScene[object_name].rendering_mode,
-        g_VirtualScene[object_name].num_indices,
-        GL_UNSIGNED_INT,
-        (void*)g_VirtualScene[object_name].first_index
+            g_VirtualScene[object_name].rendering_mode,
+            g_VirtualScene[object_name].num_indices,
+            GL_UNSIGNED_INT,
+            (void*)g_VirtualScene[object_name].first_index
     );
 
     // "Desligamos" o VAO, evitando assim que operações posteriores venham a
@@ -1606,19 +1634,19 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 
 
 void moving_player(glm::vec4 u,glm::vec4 w) {
-  // You need to add or sub W or U vector to player_pos
-  if (w_player_moving == 1) {
-    player_pos = player_pos - moving_delta * w;
-  }
-  if (s_player_moving == 1) {
-    player_pos = player_pos + moving_delta * w;
-  }
-  if (a_player_moving == 1) {
-    player_pos = player_pos - moving_delta * u;
-  }
-  if (d_player_moving == 1) {
-    player_pos = player_pos + moving_delta * u;
-  }
+    // You need to add or sub W or U vector to player_pos
+    if (w_player_moving == 1) {
+        player_pos = player_pos - moving_delta * w;
+    }
+    if (s_player_moving == 1) {
+        player_pos = player_pos + moving_delta * w;
+    }
+    if (a_player_moving == 1) {
+        player_pos = player_pos - moving_delta * u;
+    }
+    if (d_player_moving == 1) {
+        player_pos = player_pos + moving_delta * u;
+    }
 }
 
 
@@ -1826,11 +1854,11 @@ void ErrorCallback(int error, const char* description)
 // view, e projection; e escreve na tela as matrizes e pontos resultantes
 // dessas transformações.
 void TextRendering_ShowModelViewProjection(
-    GLFWwindow* window,
-    glm::mat4 projection,
-    glm::mat4 view,
-    glm::mat4 model,
-    glm::vec4 p_model
+        GLFWwindow* window,
+        glm::mat4 projection,
+        glm::mat4 view,
+        glm::mat4 model,
+        glm::vec4 p_model
 )
 {
     if ( !g_ShowInfoText )
@@ -1922,168 +1950,168 @@ void TextRendering_ShowFramesPerSecond(GLFWwindow* window)
 // Veja: https://github.com/syoyo/tinyobjloader/blob/22883def8db9ef1f3ffb9b404318e7dd25fdbb51/loader_example.cc#L98
 void PrintObjModelInfo(ObjModel* model)
 {
-  const tinyobj::attrib_t                & attrib    = model->attrib;
-  const std::vector<tinyobj::shape_t>    & shapes    = model->shapes;
-  const std::vector<tinyobj::material_t> & materials = model->materials;
+    const tinyobj::attrib_t                & attrib    = model->attrib;
+    const std::vector<tinyobj::shape_t>    & shapes    = model->shapes;
+    const std::vector<tinyobj::material_t> & materials = model->materials;
 
-  printf("# of vertices  : %d\n", (int)(attrib.vertices.size() / 3));
-  printf("# of normals   : %d\n", (int)(attrib.normals.size() / 3));
-  printf("# of texcoords : %d\n", (int)(attrib.texcoords.size() / 2));
-  printf("# of shapes    : %d\n", (int)shapes.size());
-  printf("# of materials : %d\n", (int)materials.size());
+    printf("# of vertices  : %d\n", (int)(attrib.vertices.size() / 3));
+    printf("# of normals   : %d\n", (int)(attrib.normals.size() / 3));
+    printf("# of texcoords : %d\n", (int)(attrib.texcoords.size() / 2));
+    printf("# of shapes    : %d\n", (int)shapes.size());
+    printf("# of materials : %d\n", (int)materials.size());
 
-  for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
-    printf("  v[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
-           static_cast<const double>(attrib.vertices[3 * v + 0]),
-           static_cast<const double>(attrib.vertices[3 * v + 1]),
-           static_cast<const double>(attrib.vertices[3 * v + 2]));
-  }
-
-  for (size_t v = 0; v < attrib.normals.size() / 3; v++) {
-    printf("  n[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
-           static_cast<const double>(attrib.normals[3 * v + 0]),
-           static_cast<const double>(attrib.normals[3 * v + 1]),
-           static_cast<const double>(attrib.normals[3 * v + 2]));
-  }
-
-  for (size_t v = 0; v < attrib.texcoords.size() / 2; v++) {
-    printf("  uv[%ld] = (%f, %f)\n", static_cast<long>(v),
-           static_cast<const double>(attrib.texcoords[2 * v + 0]),
-           static_cast<const double>(attrib.texcoords[2 * v + 1]));
-  }
-
-  // For each shape
-  for (size_t i = 0; i < shapes.size(); i++) {
-    printf("shape[%ld].name = %s\n", static_cast<long>(i),
-           shapes[i].name.c_str());
-    printf("Size of shape[%ld].indices: %lu\n", static_cast<long>(i),
-           static_cast<unsigned long>(shapes[i].mesh.indices.size()));
-
-    size_t index_offset = 0;
-
-    assert(shapes[i].mesh.num_face_vertices.size() ==
-           shapes[i].mesh.material_ids.size());
-
-    printf("shape[%ld].num_faces: %lu\n", static_cast<long>(i),
-           static_cast<unsigned long>(shapes[i].mesh.num_face_vertices.size()));
-
-    // For each face
-    for (size_t f = 0; f < shapes[i].mesh.num_face_vertices.size(); f++) {
-      size_t fnum = shapes[i].mesh.num_face_vertices[f];
-
-      printf("  face[%ld].fnum = %ld\n", static_cast<long>(f),
-             static_cast<unsigned long>(fnum));
-
-      // For each vertex in the face
-      for (size_t v = 0; v < fnum; v++) {
-        tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
-        printf("    face[%ld].v[%ld].idx = %d/%d/%d\n", static_cast<long>(f),
-               static_cast<long>(v), idx.vertex_index, idx.normal_index,
-               idx.texcoord_index);
-      }
-
-      printf("  face[%ld].material_id = %d\n", static_cast<long>(f),
-             shapes[i].mesh.material_ids[f]);
-
-      index_offset += fnum;
+    for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
+        printf("  v[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
+               static_cast<const double>(attrib.vertices[3 * v + 0]),
+               static_cast<const double>(attrib.vertices[3 * v + 1]),
+               static_cast<const double>(attrib.vertices[3 * v + 2]));
     }
 
-    printf("shape[%ld].num_tags: %lu\n", static_cast<long>(i),
-           static_cast<unsigned long>(shapes[i].mesh.tags.size()));
-    for (size_t t = 0; t < shapes[i].mesh.tags.size(); t++) {
-      printf("  tag[%ld] = %s ", static_cast<long>(t),
-             shapes[i].mesh.tags[t].name.c_str());
-      printf(" ints: [");
-      for (size_t j = 0; j < shapes[i].mesh.tags[t].intValues.size(); ++j) {
-        printf("%ld", static_cast<long>(shapes[i].mesh.tags[t].intValues[j]));
-        if (j < (shapes[i].mesh.tags[t].intValues.size() - 1)) {
-          printf(", ");
-        }
-      }
-      printf("]");
-
-      printf(" floats: [");
-      for (size_t j = 0; j < shapes[i].mesh.tags[t].floatValues.size(); ++j) {
-        printf("%f", static_cast<const double>(
-                         shapes[i].mesh.tags[t].floatValues[j]));
-        if (j < (shapes[i].mesh.tags[t].floatValues.size() - 1)) {
-          printf(", ");
-        }
-      }
-      printf("]");
-
-      printf(" strings: [");
-      for (size_t j = 0; j < shapes[i].mesh.tags[t].stringValues.size(); ++j) {
-        printf("%s", shapes[i].mesh.tags[t].stringValues[j].c_str());
-        if (j < (shapes[i].mesh.tags[t].stringValues.size() - 1)) {
-          printf(", ");
-        }
-      }
-      printf("]");
-      printf("\n");
+    for (size_t v = 0; v < attrib.normals.size() / 3; v++) {
+        printf("  n[%ld] = (%f, %f, %f)\n", static_cast<long>(v),
+               static_cast<const double>(attrib.normals[3 * v + 0]),
+               static_cast<const double>(attrib.normals[3 * v + 1]),
+               static_cast<const double>(attrib.normals[3 * v + 2]));
     }
-  }
 
-  for (size_t i = 0; i < materials.size(); i++) {
-    printf("material[%ld].name = %s\n", static_cast<long>(i),
-           materials[i].name.c_str());
-    printf("  material.Ka = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].ambient[0]),
-           static_cast<const double>(materials[i].ambient[1]),
-           static_cast<const double>(materials[i].ambient[2]));
-    printf("  material.Kd = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].diffuse[0]),
-           static_cast<const double>(materials[i].diffuse[1]),
-           static_cast<const double>(materials[i].diffuse[2]));
-    printf("  material.Ks = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].specular[0]),
-           static_cast<const double>(materials[i].specular[1]),
-           static_cast<const double>(materials[i].specular[2]));
-    printf("  material.Tr = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].transmittance[0]),
-           static_cast<const double>(materials[i].transmittance[1]),
-           static_cast<const double>(materials[i].transmittance[2]));
-    printf("  material.Ke = (%f, %f ,%f)\n",
-           static_cast<const double>(materials[i].emission[0]),
-           static_cast<const double>(materials[i].emission[1]),
-           static_cast<const double>(materials[i].emission[2]));
-    printf("  material.Ns = %f\n",
-           static_cast<const double>(materials[i].shininess));
-    printf("  material.Ni = %f\n", static_cast<const double>(materials[i].ior));
-    printf("  material.dissolve = %f\n",
-           static_cast<const double>(materials[i].dissolve));
-    printf("  material.illum = %d\n", materials[i].illum);
-    printf("  material.map_Ka = %s\n", materials[i].ambient_texname.c_str());
-    printf("  material.map_Kd = %s\n", materials[i].diffuse_texname.c_str());
-    printf("  material.map_Ks = %s\n", materials[i].specular_texname.c_str());
-    printf("  material.map_Ns = %s\n",
-           materials[i].specular_highlight_texname.c_str());
-    printf("  material.map_bump = %s\n", materials[i].bump_texname.c_str());
-    printf("  material.map_d = %s\n", materials[i].alpha_texname.c_str());
-    printf("  material.disp = %s\n", materials[i].displacement_texname.c_str());
-    printf("  <<PBR>>\n");
-    printf("  material.Pr     = %f\n", materials[i].roughness);
-    printf("  material.Pm     = %f\n", materials[i].metallic);
-    printf("  material.Ps     = %f\n", materials[i].sheen);
-    printf("  material.Pc     = %f\n", materials[i].clearcoat_thickness);
-    printf("  material.Pcr    = %f\n", materials[i].clearcoat_thickness);
-    printf("  material.aniso  = %f\n", materials[i].anisotropy);
-    printf("  material.anisor = %f\n", materials[i].anisotropy_rotation);
-    printf("  material.map_Ke = %s\n", materials[i].emissive_texname.c_str());
-    printf("  material.map_Pr = %s\n", materials[i].roughness_texname.c_str());
-    printf("  material.map_Pm = %s\n", materials[i].metallic_texname.c_str());
-    printf("  material.map_Ps = %s\n", materials[i].sheen_texname.c_str());
-    printf("  material.norm   = %s\n", materials[i].normal_texname.c_str());
-    std::map<std::string, std::string>::const_iterator it(
-        materials[i].unknown_parameter.begin());
-    std::map<std::string, std::string>::const_iterator itEnd(
-        materials[i].unknown_parameter.end());
-
-    for (; it != itEnd; it++) {
-      printf("  material.%s = %s\n", it->first.c_str(), it->second.c_str());
+    for (size_t v = 0; v < attrib.texcoords.size() / 2; v++) {
+        printf("  uv[%ld] = (%f, %f)\n", static_cast<long>(v),
+               static_cast<const double>(attrib.texcoords[2 * v + 0]),
+               static_cast<const double>(attrib.texcoords[2 * v + 1]));
     }
-    printf("\n");
-  }
+
+    // For each shape
+    for (size_t i = 0; i < shapes.size(); i++) {
+        printf("shape[%ld].name = %s\n", static_cast<long>(i),
+               shapes[i].name.c_str());
+        printf("Size of shape[%ld].indices: %lu\n", static_cast<long>(i),
+               static_cast<unsigned long>(shapes[i].mesh.indices.size()));
+
+        size_t index_offset = 0;
+
+        assert(shapes[i].mesh.num_face_vertices.size() ==
+               shapes[i].mesh.material_ids.size());
+
+        printf("shape[%ld].num_faces: %lu\n", static_cast<long>(i),
+               static_cast<unsigned long>(shapes[i].mesh.num_face_vertices.size()));
+
+        // For each face
+        for (size_t f = 0; f < shapes[i].mesh.num_face_vertices.size(); f++) {
+            size_t fnum = shapes[i].mesh.num_face_vertices[f];
+
+            printf("  face[%ld].fnum = %ld\n", static_cast<long>(f),
+                   static_cast<unsigned long>(fnum));
+
+            // For each vertex in the face
+            for (size_t v = 0; v < fnum; v++) {
+                tinyobj::index_t idx = shapes[i].mesh.indices[index_offset + v];
+                printf("    face[%ld].v[%ld].idx = %d/%d/%d\n", static_cast<long>(f),
+                       static_cast<long>(v), idx.vertex_index, idx.normal_index,
+                       idx.texcoord_index);
+            }
+
+            printf("  face[%ld].material_id = %d\n", static_cast<long>(f),
+                   shapes[i].mesh.material_ids[f]);
+
+            index_offset += fnum;
+        }
+
+        printf("shape[%ld].num_tags: %lu\n", static_cast<long>(i),
+               static_cast<unsigned long>(shapes[i].mesh.tags.size()));
+        for (size_t t = 0; t < shapes[i].mesh.tags.size(); t++) {
+            printf("  tag[%ld] = %s ", static_cast<long>(t),
+                   shapes[i].mesh.tags[t].name.c_str());
+            printf(" ints: [");
+            for (size_t j = 0; j < shapes[i].mesh.tags[t].intValues.size(); ++j) {
+                printf("%ld", static_cast<long>(shapes[i].mesh.tags[t].intValues[j]));
+                if (j < (shapes[i].mesh.tags[t].intValues.size() - 1)) {
+                    printf(", ");
+                }
+            }
+            printf("]");
+
+            printf(" floats: [");
+            for (size_t j = 0; j < shapes[i].mesh.tags[t].floatValues.size(); ++j) {
+                printf("%f", static_cast<const double>(
+                        shapes[i].mesh.tags[t].floatValues[j]));
+                if (j < (shapes[i].mesh.tags[t].floatValues.size() - 1)) {
+                    printf(", ");
+                }
+            }
+            printf("]");
+
+            printf(" strings: [");
+            for (size_t j = 0; j < shapes[i].mesh.tags[t].stringValues.size(); ++j) {
+                printf("%s", shapes[i].mesh.tags[t].stringValues[j].c_str());
+                if (j < (shapes[i].mesh.tags[t].stringValues.size() - 1)) {
+                    printf(", ");
+                }
+            }
+            printf("]");
+            printf("\n");
+        }
+    }
+
+    for (size_t i = 0; i < materials.size(); i++) {
+        printf("material[%ld].name = %s\n", static_cast<long>(i),
+               materials[i].name.c_str());
+        printf("  material.Ka = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].ambient[0]),
+               static_cast<const double>(materials[i].ambient[1]),
+               static_cast<const double>(materials[i].ambient[2]));
+        printf("  material.Kd = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].diffuse[0]),
+               static_cast<const double>(materials[i].diffuse[1]),
+               static_cast<const double>(materials[i].diffuse[2]));
+        printf("  material.Ks = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].specular[0]),
+               static_cast<const double>(materials[i].specular[1]),
+               static_cast<const double>(materials[i].specular[2]));
+        printf("  material.Tr = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].transmittance[0]),
+               static_cast<const double>(materials[i].transmittance[1]),
+               static_cast<const double>(materials[i].transmittance[2]));
+        printf("  material.Ke = (%f, %f ,%f)\n",
+               static_cast<const double>(materials[i].emission[0]),
+               static_cast<const double>(materials[i].emission[1]),
+               static_cast<const double>(materials[i].emission[2]));
+        printf("  material.Ns = %f\n",
+               static_cast<const double>(materials[i].shininess));
+        printf("  material.Ni = %f\n", static_cast<const double>(materials[i].ior));
+        printf("  material.dissolve = %f\n",
+               static_cast<const double>(materials[i].dissolve));
+        printf("  material.illum = %d\n", materials[i].illum);
+        printf("  material.map_Ka = %s\n", materials[i].ambient_texname.c_str());
+        printf("  material.map_Kd = %s\n", materials[i].diffuse_texname.c_str());
+        printf("  material.map_Ks = %s\n", materials[i].specular_texname.c_str());
+        printf("  material.map_Ns = %s\n",
+               materials[i].specular_highlight_texname.c_str());
+        printf("  material.map_bump = %s\n", materials[i].bump_texname.c_str());
+        printf("  material.map_d = %s\n", materials[i].alpha_texname.c_str());
+        printf("  material.disp = %s\n", materials[i].displacement_texname.c_str());
+        printf("  <<PBR>>\n");
+        printf("  material.Pr     = %f\n", materials[i].roughness);
+        printf("  material.Pm     = %f\n", materials[i].metallic);
+        printf("  material.Ps     = %f\n", materials[i].sheen);
+        printf("  material.Pc     = %f\n", materials[i].clearcoat_thickness);
+        printf("  material.Pcr    = %f\n", materials[i].clearcoat_thickness);
+        printf("  material.aniso  = %f\n", materials[i].anisotropy);
+        printf("  material.anisor = %f\n", materials[i].anisotropy_rotation);
+        printf("  material.map_Ke = %s\n", materials[i].emissive_texname.c_str());
+        printf("  material.map_Pr = %s\n", materials[i].roughness_texname.c_str());
+        printf("  material.map_Pm = %s\n", materials[i].metallic_texname.c_str());
+        printf("  material.map_Ps = %s\n", materials[i].sheen_texname.c_str());
+        printf("  material.norm   = %s\n", materials[i].normal_texname.c_str());
+        std::map<std::string, std::string>::const_iterator it(
+                materials[i].unknown_parameter.begin());
+        std::map<std::string, std::string>::const_iterator itEnd(
+                materials[i].unknown_parameter.end());
+
+        for (; it != itEnd; it++) {
+            printf("  material.%s = %s\n", it->first.c_str(), it->second.c_str());
+        }
+        printf("\n");
+    }
 }
 
 // set makeprg=cd\ ..\ &&\ make\ run\ >/dev/null

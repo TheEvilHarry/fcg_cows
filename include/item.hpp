@@ -21,7 +21,7 @@ class Item {
     void setBBoxMax(vec3 n_bbox_max);
     vec4 getPosition() const;
 	void setPosition(vec4 newPosition);
-	float move(vec4 direction);
+    float move(vec4 direction,int controlcow);
 	char const * getName();
 	int getId();
 };
