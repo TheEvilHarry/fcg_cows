@@ -130,6 +130,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 // ##### coisas adicionadas por nós #####
 bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &bbox_min2, glm::vec4 &bbox_max2);
+bool CheckCubePlayerCollision(glm::vec4 &bbox_min, glm::vec4 &bbox_max, glm::vec4 &position);
+
 
 Item vaca_inicial(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "cow", COW, true);
 //Item spinning_cube(glm::vec4(3.0f, 0.0f, 0.0f, 0.0f), "cube", CUBE);
@@ -182,6 +184,7 @@ struct Wall
 void DrawWall (Wall new_wall);
 void DrawDoor (Wall new_wall);
 bool CheckWallColision (Wall wall, glm::vec4 position);
+
 
 
 // Abaixo definimos variáveis globais utilizadas em várias funções do código.
@@ -784,6 +787,9 @@ int main(int argc, char* argv[])
 
             glm::vec4 vaca_position = glm::vec4(moving,current_position.y,current_position.z,0.0f);
             vaca_inicial.setPosition(vaca_position);
+
+            if (CheckCubePlayerCollision(vaca_bbox_min,vaca_bbox_max,camera_position_c))
+                printf("AAAAAAAAAAAAAAA");
 
             if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
                                    cubo_bbox_min,cubo_bbox_max))
@@ -1409,6 +1415,14 @@ int main(int argc, char* argv[])
 }
 
 ///// ok ok ok ok ko
+
+bool CheckCubePlayerCollision(glm::vec4 &bbox_min, glm::vec4 &bbox_max, glm::vec4 &position)
+{
+    return (position.x >= bbox_min.x && position.x <= bbox_max.x) &&
+           (position.y >= bbox_min.y && position.y <= bbox_max.y) &&
+           (position.z >= bbox_min.z && position.z <= bbox_max.z);
+}
+
 
 //teste de colisao cubo-cubo
 bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &bbox_min2, glm::vec4 &bbox_max2)
