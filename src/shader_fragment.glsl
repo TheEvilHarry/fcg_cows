@@ -35,6 +35,8 @@ uniform mat4 projection;
 
 #define PLANEOVER 11
 #define OVERCOW 12
+#define PLANEWIN 13
+#define COWWIN   14
 
 uniform int object_id;
 
@@ -49,6 +51,8 @@ uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
+uniform sampler2D TextureImage6;
+uniform sampler2D TextureImage7;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -218,6 +222,28 @@ void main()
 
         V = (position_model.y - miny)/(maxy - miny);
     }
+    else if ( object_id == PLANEWIN )
+    {
+        // Coordenadas de textura do plano, obtidas do arquivo OBJ.
+        U = texcoords.x;
+        V = texcoords.y;
+    }
+    else if (object_id == COWWIN)
+    {
+         float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        U = (position_model.x - minx)/(maxx - minx);
+
+
+        V = (position_model.y - miny)/(maxy - miny);
+    }
 
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
@@ -252,6 +278,14 @@ void main()
      else if(object_id == PLANEOVER)
      {
          Kd0 = texture(TextureImage5, vec2(U,V)).rgb;
+     }
+     else if(object_id == PLANEWIN)
+     {
+         Kd0 = texture(TextureImage6, vec2(U,V)).rgb;
+     }
+     else if(object_id == COWWIN)
+     {
+         Kd0 = texture(TextureImage7, vec2(U,V)).rgb;
      }
 
 
