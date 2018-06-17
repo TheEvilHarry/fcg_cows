@@ -180,6 +180,7 @@ struct Wall
     float rotateZ = 0.0f;
 };
 void DrawWall (Wall new_wall);
+void DrawDoor (Wall new_wall);
 bool CheckWallColision (Wall wall, glm::vec4 position);
 
 
@@ -262,7 +263,9 @@ int d_player_moving = 0;
 int w_player_moving = 0;
 int s_player_moving = 0;
 
-
+int openDoor = 0;
+int KeyClose = 0;
+int freePath = 0;
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
@@ -513,6 +516,10 @@ int main(int argc, char* argv[])
 //trials
         //wingame=true;
         //gameover =true;
+
+
+
+
         if(gameover == false && wingame == false)
         {
 
@@ -739,9 +746,11 @@ int main(int argc, char* argv[])
 
             // transformaçoes para colcar o cubo no lugar certo
             //spinning cube
-            model = Matrix_Translate(3.0f, 0.0f, 0.0f)
-                    * Matrix_Scale(0.1,0.1,0.1)
-                    * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.5f);
+            model = Matrix_Translate(46.7f, 0.0f, 26.4f)
+                    * Matrix_Rotate_X(g_AngleX)
+                    * Matrix_Rotate_Y(g_AngleY)
+                    * Matrix_Rotate_Z(g_AngleZ)
+                     * Matrix_Scale(0.8f,0.8f,0.8f);
 
             // atualizando a bbox do cubo com sua posiçao atual
             glm::vec4 cubo_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
@@ -760,12 +769,14 @@ int main(int argc, char* argv[])
 
             float moving = vaca_inicial.move(current_position);
             static float cowY_angle = 0.0f;
+            static float cowX_angle = 0.0f;
+            static float cowZ_angle = 0.0f;
 
             //First cow
             model = Matrix_Translate(moving,current_position.y,current_position.z)
-                    * Matrix_Rotate_X(g_AngleX)
+                    * Matrix_Rotate_X(cowX_angle)
                     * Matrix_Rotate_Y(cowY_angle)
-                    * Matrix_Rotate_Z(g_AngleZ);
+                    * Matrix_Rotate_Z(cowZ_angle);
 
             //atualizando a posiçao da vaca;
             glm::vec4 vaca_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
@@ -954,6 +965,7 @@ int main(int argc, char* argv[])
             glUniform1i(object_id_uniform, FLOOR);
             DrawVirtualObject("plane");
 
+			//Door Hallway ceiling
             model = Matrix_Translate(4.0f,4.0f,14.5f)
                     *Matrix_Rotate_Z(40.897)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f);
@@ -961,19 +973,55 @@ int main(int argc, char* argv[])
             glUniform1i(object_id_uniform, FLOOR);
             DrawVirtualObject("plane");
 
+			// Key Hallway Right Wall
+			Wall ChaveDireita_wall;
 
+			ChaveDireita_wall.posX = 35.5f;
+            ChaveDireita_wall.posY = 2.0f;
+			ChaveDireita_wall.posZ = 28.55f;
 
+            ChaveDireita_wall.scaleX = 16.0f;
+            ChaveDireita_wall.scaleY = 4.0f;
+            ChaveDireita_wall.scaleZ = 4.0f;
 
-            model = Matrix_Translate(35.5f,2.0f,28.55f)
+			ChaveDireita_wall.rotateX = 20.4232f;
+			ChaveDireita_wall.rotateZ = 40.85;
+
+            DrawWall(ChaveDireita_wall);
+
+			// Key Hallway Right Wall
+            /*model = Matrix_Translate(35.5f,2.0f,28.55f)
                     * Matrix_Rotate_Z(40.865f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
                     * Matrix_Rotate_X(-20.4232f)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f); //
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
+			//Key Hallway Left Wall
+			Wall ChaveEsquerda_wall;
 
+			ChaveEsquerda_wall.posX = 47.93f;
+            ChaveEsquerda_wall.posY = 2.0f;
+			ChaveEsquerda_wall.posZ = 23.85f;
 
+            ChaveEsquerda_wall.scaleX = 20.0f;
+            ChaveEsquerda_wall.scaleY = 4.0f;
+            ChaveEsquerda_wall.scaleZ = 4.0f;
+
+			ChaveEsquerda_wall.rotateX = 20.45f;
+
+            DrawWall(ChaveEsquerda_wall);
+
+			//Key Hallway Left Wall
+            /*model = Matrix_Translate(47.93f,2.0f,23.85f)
+                    * Matrix_Rotate_X(20.44f)
+                    * Matrix_Scale(20.0f, 1.0f, 4.0f); //
+            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+            glUniform1i(object_id_uniform, ONEWALL);
+            DrawVirtualObject("plane");*/
+
+			// Key Hallway Ceiling
             model = Matrix_Translate(40.0f,5.9f,25.0f)
                     *Matrix_Rotate_Z(40.897)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f);
@@ -981,36 +1029,85 @@ int main(int argc, char* argv[])
             glUniform1i(object_id_uniform, FLOOR);
             DrawVirtualObject("plane");
 
+			// Key Hallway Floor
             model = Matrix_Translate(41.5f,-1.0f,25.0f)
                     * Matrix_Scale(12.0f, 1.0f, 4.0f);
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, KEYF);
             DrawVirtualObject("plane");
 
+			// Exit Door
+            Wall PortaDeSaida_wall;
 
-            //Left wall
-            model = Matrix_Translate(47.93f,2.0f,23.85f)
-                    * Matrix_Rotate_X(20.44f)
-                    * Matrix_Scale(20.0f, 1.0f, 4.0f); //
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");
+			PortaDeSaida_wall.posX = -7.0f;
+            PortaDeSaida_wall.posY = 1.0f;
+			PortaDeSaida_wall.posZ = 13.7f;
 
-            model = Matrix_Translate(-7.0f,1.0f,13.7f)
+            PortaDeSaida_wall.scaleX = 1.0f;
+            PortaDeSaida_wall.scaleY = 2.8f;
+            PortaDeSaida_wall.scaleZ = 4.0f;
+
+			PortaDeSaida_wall.rotateZ = -20.45f;
+
+            DrawDoor(PortaDeSaida_wall);
+
+			// Exit Door
+			/*model = Matrix_Translate(-7.0f,1.0f,13.7f)
                     * Matrix_Scale(1.0f, 2.8f, 4.0f)
                     *Matrix_Rotate_Z(-20.44f);
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, DOOR);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
-            model = Matrix_Translate(50.5f,3.0f,26.5f)
+            // Key Hallway Front Wall
+            Wall ChaveFrente_wall;
+
+			ChaveFrente_wall.posX = 50.5f;
+            ChaveFrente_wall.posY = 3.0f;
+			ChaveFrente_wall.posZ = 26.5f;
+
+            ChaveFrente_wall.scaleX = 1.0f;
+            ChaveFrente_wall.scaleY = 4.0f;
+            ChaveFrente_wall.scaleZ = 3.0f;
+
+			ChaveFrente_wall.rotateZ = 20.45f;
+
+            DrawWall(ChaveFrente_wall);
+
+			// Key Hallway Front Wall
+            /*model = Matrix_Translate(50.5f,3.0f,26.5f)
                     * Matrix_Scale(1.0f,4.0f, 3.0f)
                     *Matrix_Rotate_Z(20.44f);
 
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, THREEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
+
+            if(g_AngleX >= 6.283186f && g_AngleY >= 6.283186f && g_AngleZ >= 6.283186f )
+            {
+                        //Testa rotação da chave
+                        openDoor = 1;
+            }
+
+            if(player_pos[0] >= 42.0f && player_pos[2] >= 22.0f )
+            {
+                //Testa proximidade do jogador da chave
+                KeyClose = 1;
+
+            }
+
+            if(KeyClose == 1 && openDoor == 1)
+            {
+                //Abre Porta
+                freePath = 1;
+
+            }
+
+            if(freePath==1 && player_pos[0]<= -7.0f && player_pos[2]>= 10.0f )
+            {
+                wingame=true;
+            }
 
 
 
@@ -1337,6 +1434,21 @@ void DrawWall (Wall new_wall)
     DrawVirtualObject("plane");
 }
 
+void DrawDoor(Wall new_wall)
+{
+    glm::mat4 model = Matrix_Identity(); // Transformação identidade de modelagem
+
+    model = Matrix_Translate(new_wall.posX,new_wall.posY,new_wall.posZ)
+            * Matrix_Scale(new_wall.scaleX,new_wall.scaleY,new_wall.scaleZ)
+            * Matrix_Rotate_X(new_wall.rotateX)
+            * Matrix_Rotate_Y(new_wall.rotateY)
+            * Matrix_Rotate_Z(new_wall.rotateZ);
+
+    glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
+    glUniform1i(object_id_uniform, DOOR);
+    DrawVirtualObject("plane");
+}
+
 //teste cubo-plano
 bool CheckWallColision (Wall wall, glm::vec4 position)
 {
@@ -1490,6 +1602,7 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage6"), 6);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage7"), 7);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage8"), 8);
     glUseProgram(0);
 }
 
@@ -2069,18 +2182,21 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
 
     float delta = 3.141592 / 16; // 22.5 graus, em radianos.
 
-    if (key == GLFW_KEY_X && action == GLFW_PRESS)
+    if (key == GLFW_KEY_X && action == GLFW_PRESS && KeyClose)
     {
         g_AngleX += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
+        printf("%f %f %f \n", g_AngleX, g_AngleZ,g_AngleY);
     }
 
-    if (key == GLFW_KEY_Y && action == GLFW_PRESS)
+    if (key == GLFW_KEY_Y && action == GLFW_PRESS && KeyClose)
     {
         g_AngleY += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
+        printf("%f %f %f \n", g_AngleX, g_AngleZ,g_AngleY);
     }
-    if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+    if (key == GLFW_KEY_Z && action == GLFW_PRESS && KeyClose)
     {
         g_AngleZ += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
+        printf("%f %f %f \n", g_AngleX, g_AngleZ,g_AngleY);
     }
     /*
     MOVING ACTIVE
@@ -2153,6 +2269,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         menu = false;
     }
+
 }
 
 
