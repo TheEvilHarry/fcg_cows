@@ -759,11 +759,12 @@ int main(int argc, char* argv[])
             //static int control_cow = vaca_inicial.getControl();
 
             float moving = vaca_inicial.move(current_position);
+            static float cowY_angle = 0.0f;
 
             //First cow
             model = Matrix_Translate(moving,current_position.y,current_position.z)
                     * Matrix_Rotate_X(g_AngleX)
-                    * Matrix_Rotate_Y(g_AngleY)
+                    * Matrix_Rotate_Y(cowY_angle)
                     * Matrix_Rotate_Z(g_AngleZ);
 
             //atualizando a posiçao da vaca;
@@ -777,11 +778,13 @@ int main(int argc, char* argv[])
                                    cubo_bbox_min,cubo_bbox_max))
             {
                 vaca_inicial.setControl(false);
+                cowY_angle = PI;
             }
 
             if (CheckWallColision(back_wall,vaca_position))
             {
-                printf("BBBBBBBBBBBBBBBB");
+                vaca_inicial.setControl(true);
+                cowY_angle = 0.0f;
             }
 
 
