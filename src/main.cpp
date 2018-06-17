@@ -290,7 +290,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "INF01047 - 00272730 - Henrique da Silva Barboza", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "SPACE COW MAYHEM", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -512,7 +512,7 @@ int main(int argc, char* argv[])
         {
 
 
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
 
             // "Pintamos" todos os pixels do framebuffer com a cor definida acima,
             // e também resetamos todos os pixels do Z-buffer (depth buffer).
@@ -600,9 +600,23 @@ int main(int argc, char* argv[])
 
             current_name = (char*)"plane";
 
+            Wall left_wall;
+
+			left_wall.posX = 8.0f;
+            left_wall.posY = 2.0f;
+			left_wall.posZ = -3.7f;
+
+            left_wall.scaleX = 20.0f;
+            left_wall.scaleY = 5.0f;
+            left_wall.scaleZ = 4.0f;
+
+            left_wall.rotateX = 20.45f;
+
+            DrawWall(left_wall);
+
 
             //Left wall
-            model = Matrix_Translate(8.0f,2.0f,-3.7f)
+            /*model = Matrix_Translate(8.0f,2.0f,-3.7f)
                     * Matrix_Rotate_X(20.45f)
                     * Matrix_Scale(20.0f, 1.0f, 4.0f); //
 
@@ -611,11 +625,26 @@ int main(int argc, char* argv[])
 
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
+            Wall right_wall;
+
+			right_wall.posX = 4.2f;
+            right_wall.posY = 2.0f;
+			right_wall.posZ = 4.0f;
+
+            right_wall.scaleX = 16.0f;
+            right_wall.scaleY = 5.0f;
+            right_wall.scaleZ = 4.0f;
+
+			right_wall.rotateZ = 40.84f;
+            right_wall.rotateX = 20.4232f;
+
+
+            DrawWall(right_wall);
 
             //Right wall
-            model = Matrix_Translate(4.2f,2.0f,4.0f)
+            /*model = Matrix_Translate(4.2f,2.0f,4.0f)
                     * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
                     * Matrix_Rotate_X(-20.4232f)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f); //
@@ -625,7 +654,8 @@ int main(int argc, char* argv[])
 
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
+
 
             Wall back_wall;
 
@@ -654,8 +684,22 @@ int main(int argc, char* argv[])
             DrawVirtualObject("plane");
             */
 
-//          Front wall / Left Wall From Second hallway
-            model = Matrix_Translate(28.0f,2.0f,7.84f)
+			Wall front_wall;
+
+			front_wall.posX = 28.0f;
+            front_wall.posY = 2.0f;
+			front_wall.posZ = 7.84f;
+
+            front_wall.scaleX = 1.0f;
+            front_wall.scaleY = 4.0f;
+            front_wall.scaleZ = 16.0f;
+
+            front_wall.rotateZ = 20.4232f;
+
+            DrawWall(front_wall);
+
+			//Front wall / Left Wall From Second hallway
+            /*model = Matrix_Translate(28.0f,2.0f,7.84f)
                     * Matrix_Scale(1.0f,4.0f, 16.0f)
                     * Matrix_Rotate_Z(20.4232f);
 
@@ -665,6 +709,21 @@ int main(int argc, char* argv[])
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, THREEWALL);
             DrawVirtualObject("plane");
+			*/
+
+			Wall fechaCorredor;
+
+			fechaCorredor.posX = 18.5f;
+            fechaCorredor.posY = 2.0f;
+			fechaCorredor.posZ = 0.0f;
+
+            fechaCorredor.scaleX = 1.0f;
+            fechaCorredor.scaleY = 4.0f;
+            fechaCorredor.scaleZ = 4.0f;
+
+            fechaCorredor.rotateZ = 20.4232f;
+
+            DrawWall(fechaCorredor);
 
             //#######################
 
@@ -731,14 +790,40 @@ int main(int argc, char* argv[])
 
             ////////////////////////////////////////
 
+			Wall floor;
+
+			floor.posX = 3.35f;
+            floor.posY = -1.0f;
+			floor.posZ = 0.0f;
+
+            floor.scaleX = 17.0f;
+            floor.scaleY = 1.0f;
+            floor.scaleZ = 4.0f;
+
+            DrawWall(floor);
+
             //Floor
-            model = Matrix_Translate(3.35f,-1.0f,0.0f)
+            /*model = Matrix_Translate(3.35f,-1.0f,0.0f)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f);
 
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, FLOOR);
             DrawVirtualObject("plane");
-            //roomPlanes[0] = getPlaneEquation(model);
+            //roomPlanes[0] = getPlaneEquation(model);*/
+
+			/*Wall floor2;
+
+			floor2.posX = 24.2f;
+            floor2.posY = -1.0f;
+			floor2.posZ = 12.5f;
+
+            floor2.scaleX = 16.5f;
+            floor2.scaleY = 1.0f;
+            floor2.scaleZ = 5.5f;
+
+			floor2.rotateY = 20.45f;
+
+            DrawWall(floor2);*/
 
             //Floor 2
             model = Matrix_Translate(24.2f,-1.0f,12.5f)
@@ -770,34 +855,90 @@ int main(int argc, char* argv[])
             DrawVirtualObject("plane");
 
 
-            model = Matrix_Translate(20.0f,1.0f,8.0f)
+            Wall corredor2Dir1_wall;
+
+			corredor2Dir1_wall.posX = 20.0f;
+            corredor2Dir1_wall.posY = 1.0f;
+			corredor2Dir1_wall.posZ = 8.0f;
+
+            corredor2Dir1_wall.scaleX = 1.0f;
+            corredor2Dir1_wall.scaleY = 4.0f;
+            corredor2Dir1_wall.scaleZ = 4.0f;
+
+			corredor2Dir1_wall.rotateZ = -20.44f;
+
+            DrawWall(corredor2Dir1_wall);
+            /*model = Matrix_Translate(20.0f,1.0f,8.0f)
                     * Matrix_Scale(1.0f, 4.0f, 4.0f)
                     *Matrix_Rotate_Z(-20.44f);
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, THREEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
-            model = Matrix_Translate(20.0f,1.0f,23.0f)
+            Wall corredor2Dir2_wall;
+
+			corredor2Dir2_wall.posX = 20.0f;
+            corredor2Dir2_wall.posY = 1.0f;
+			corredor2Dir2_wall.posZ = 23.0f;
+
+            corredor2Dir2_wall.scaleX = 1.0f;
+            corredor2Dir2_wall.scaleY = 4.0f;
+            corredor2Dir2_wall.scaleZ = 6.0f;
+
+			corredor2Dir2_wall.rotateZ = -20.44f;
+
+            DrawWall(corredor2Dir2_wall);
+
+            /*model = Matrix_Translate(20.0f,1.0f,23.0f)
                     * Matrix_Scale(1.0f, 4.0f, 6.0f)
                     *Matrix_Rotate_Z(-20.44f);
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, THREEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
-            model = Matrix_Translate(4.2f,2.0f,17.0f)
+            Wall FimEsquerda_wall;
+
+			FimEsquerda_wall.posX = 4.2f;
+            FimEsquerda_wall.posY = 2.0f;
+			FimEsquerda_wall.posZ = 17.0f;
+
+            FimEsquerda_wall.scaleX = 15.8f;
+            FimEsquerda_wall.scaleY = -4.0f;
+            FimEsquerda_wall.scaleZ = 4.0f;
+
+			FimEsquerda_wall.rotateZ = 40.8f;
+			FimEsquerda_wall.rotateX = -20.4232f;
+
+            DrawWall(FimEsquerda_wall);
+
+            /*model = Matrix_Translate(4.2f,2.0f,17.0f)
                     * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
                     * Matrix_Rotate_X(-20.4232f)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f); //
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
-            model = Matrix_Translate(4.2f,2.0f,12.0f)
+            Wall FimDireita_wall;
+
+			FimDireita_wall.posX = 4.2f;
+            FimDireita_wall.posY = 2.0f;
+			FimDireita_wall.posZ = 12.0f;
+
+            FimDireita_wall.scaleX = 15.8f;
+            FimDireita_wall.scaleY = 4.0f;
+            FimDireita_wall.scaleZ = 4.0f;
+
+			FimDireita_wall.rotateX = 20.4232f;
+
+            DrawWall(FimDireita_wall);
+
+            /*model = Matrix_Translate(4.2f,2.0f,12.0f)
                     * Matrix_Rotate_X(20.4232f)
                     * Matrix_Scale(16.0f, 1.0f, 4.0f); //
             glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
             glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");
+            DrawVirtualObject("plane");*/
 
             //Door Hallway floor
             model = Matrix_Translate(3.35f,-1.0f,14.5f)
@@ -1696,7 +1837,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 void moving_player(glm::vec4 u,glm::vec4 w) {
     // You need to add or sub W or U vector to player_pos
     if (w_player_moving == 1) {
-        player_pos = player_pos - moving_delta * w;
+        player_pos = player_pos - (moving_delta * w);
     }
     if (s_player_moving == 1) {
         player_pos = player_pos + moving_delta * w;
@@ -1896,7 +2037,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     }
 
     //controle do menu:
-    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS && menu == true)
+    if (key == GLFW_KEY_CAPS_LOCK && action == GLFW_PRESS && menu == true)
     {
         menu = false;
     }
