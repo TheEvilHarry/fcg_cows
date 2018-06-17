@@ -133,8 +133,14 @@ bool checkCubeCollision(glm::vec4 &bbox_min1, glm::vec4 &bbox_max1, glm::vec4 &b
 bool CheckCubePlayerCollision(glm::vec4 &bbox_min, glm::vec4 &bbox_max, glm::vec4 &position);
 
 
-Item vaca_inicial(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), "cow", COW, true);
-//Item spinning_cube(glm::vec4(3.0f, 0.0f, 0.0f, 0.0f), "cube", CUBE);
+Item vaca_inicial(glm::vec4(18.0f, 0.0f, 0.0f, 0.0f), "cow", COW, false);
+Item cow_1(glm::vec4(4.0f, 0.0f, 1.5f, 0.0f), "cow", COW, true);
+Item cow_2(glm::vec4(-1.0f, 0.0f, -0.5f, 0.0f), "cow", COW, true);
+Item cow_3(glm::vec4(5.0f, 0.0f, 1.0f, 0.0f), "cow", COW, true);
+Item cow_4(glm::vec4(7.0f, 0.0f, -1.5f, 0.0f), "cow", COW, true);
+Item cow_5(glm::vec4(7.0f, 0.0f, 1.5f, 0.0f), "cow", COW, true);
+Item cow_6(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f), "cow", COW, true);
+
 bool menu;
 char* current_name;
 int current_id;
@@ -613,6 +619,7 @@ int main(int argc, char* argv[])
 
             // #### PAREDES COM BBOXES:
 
+            // Left wall
             Wall left_wall;
 
 			left_wall.posX = 8.0f;
@@ -627,19 +634,7 @@ int main(int argc, char* argv[])
 
             DrawWall(left_wall);
 
-
-            //Left wall
-            /*model = Matrix_Translate(8.0f,2.0f,-3.7f)
-                    * Matrix_Rotate_X(20.45f)
-                    * Matrix_Scale(20.0f, 1.0f, 4.0f); //
-
-            glm::vec4 l_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-            glm::vec4 l_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");*/
-
+            // Right wall
             Wall right_wall;
 
 			right_wall.posX = 4.2f;
@@ -653,23 +648,9 @@ int main(int argc, char* argv[])
 			right_wall.rotateZ = 40.84f;
             right_wall.rotateX = 20.4232f;
 
-
             DrawWall(right_wall);
 
-            //Right wall
-            /*model = Matrix_Translate(4.2f,2.0f,4.0f)
-                    * Matrix_Rotate_Z(40.8f) // ROTAÇÃO A MAIS: dada para textura não ficar de cabeça pra baixo
-                    * Matrix_Rotate_X(-20.4232f)
-                    * Matrix_Scale(16.0f, 1.0f, 4.0f); //
-
-            glm::vec4 r_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-            glm::vec4 r_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(object_id_uniform, ONEWALL);
-            DrawVirtualObject("plane");*/
-
-
+            // Back Wall
             Wall back_wall;
 
             back_wall.posX = -11.5f;
@@ -683,20 +664,7 @@ int main(int argc, char* argv[])
 
             DrawWall(back_wall);
 
-            /*
-            //Back wall
-            model = Matrix_Translate(-11.5f,1.0f,0.0f)
-                    * Matrix_Scale(1.0f, 2.5f, 4.0f)
-                    * Matrix_Rotate_Z(-20.44f);
-
-            glm::vec4 b_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-            glm::vec4 b_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(object_id_uniform, THREEWALL);
-            DrawVirtualObject("plane");
-            */
-
+            // Fron wall
 			Wall front_wall;
 
 			front_wall.posX = 28.0f;
@@ -711,37 +679,10 @@ int main(int argc, char* argv[])
 
             DrawWall(front_wall);
 
-			//Front wall / Left Wall From Second hallway
-            /*model = Matrix_Translate(28.0f,2.0f,7.84f)
-                    * Matrix_Scale(1.0f,4.0f, 16.0f)
-                    * Matrix_Rotate_Z(20.4232f);
-
-            glm::vec4 f_wall_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-            glm::vec4 f_wall_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
-            glUniformMatrix4fv(model_uniform, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(object_id_uniform, THREEWALL);
-            DrawVirtualObject("plane");
-			*/
-
-			Wall fechaCorredor;
-
-			fechaCorredor.posX = 18.5f;
-            fechaCorredor.posY = 2.0f;
-			fechaCorredor.posZ = 0.0f;
-
-            fechaCorredor.scaleX = 1.0f;
-            fechaCorredor.scaleY = 4.0f;
-            fechaCorredor.scaleZ = 4.0f;
-
-            fechaCorredor.rotateZ = 20.4232f;
-
-            DrawWall(fechaCorredor);
-
             //#######################
 
 
-            // atualizamos as globais com as informaçoes do objeto a ser desenhado a seguir (cubo)
+            // CHAVE: #############################
 
             current_name = (char*)"cube";
             //current_id = spinning_cube.getId();
@@ -755,33 +696,29 @@ int main(int argc, char* argv[])
                     * Matrix_Rotate_Z(g_AngleZ)
                      * Matrix_Scale(0.8f,0.8f,0.8f);
 
-            // atualizando a bbox do cubo com sua posiçao atual
-            glm::vec4 cubo_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
-            glm::vec4 cubo_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
-
             //desenhando o cubo na tela
             glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
             glUniform1i(object_id_uniform, CUBE);
             DrawVirtualObject("cube");
 
+            // #############################################
+
+            // VACA DOURADA:
 
             current_name = (char*)vaca_inicial.getName();
             current_id = vaca_inicial.getId();
             current_position = vaca_inicial.getPosition();
-            //static int control_cow = vaca_inicial.getControl();
 
             float moving = vaca_inicial.move(current_position);
-            static float cowY_angle = 0.0f;
+            static float cowY_angle = PI;
             static float cowX_angle = 0.0f;
             static float cowZ_angle = 0.0f;
 
-            //First cow
             model = Matrix_Translate(moving,current_position.y,current_position.z)
                     * Matrix_Rotate_X(cowX_angle)
                     * Matrix_Rotate_Y(cowY_angle)
                     * Matrix_Rotate_Z(cowZ_angle);
 
-            //atualizando a posiçao da vaca;
             glm::vec4 vaca_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
             glm::vec4 vaca_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
 
@@ -789,14 +726,7 @@ int main(int argc, char* argv[])
             vaca_inicial.setPosition(vaca_position);
 
             if (CheckCubePlayerCollision(vaca_bbox_min,vaca_bbox_max,camera_position_c))
-                printf("AAAAAAAAAAAAAAA");
-
-            if (checkCubeCollision(vaca_bbox_min,vaca_bbox_max,
-                                   cubo_bbox_min,cubo_bbox_max))
-            {
-                vaca_inicial.setControl(false);
-                cowY_angle = PI;
-            }
+                gameover=true;
 
             if (CheckWallColision(back_wall,vaca_position))
             {
@@ -804,6 +734,164 @@ int main(int argc, char* argv[])
                 cowY_angle = 0.0f;
             }
 
+            if (CheckWallColision(front_wall,vaca_position))
+            {
+                vaca_inicial.setControl(false);
+                cowY_angle = PI;
+            }
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+            //########################################################################3
+
+            // OUTRAS VACAS:
+
+            current_name = (char*)cow_1.getName();
+            current_id = cow_1.getId();
+            current_position = cow_1.getPosition();
+
+            static float cow1Y_angle = PI/2;
+            static float cow1X_angle = 0.0f;
+            static float cow1Z_angle = 0.0f;
+
+            model = Matrix_Translate(current_position.x,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(cow1X_angle)
+                    * Matrix_Rotate_Y(cow1Y_angle)
+                    * Matrix_Rotate_Z(cow1Z_angle);
+
+            glm::vec4 vaca1_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca1_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            if (CheckCubePlayerCollision(vaca1_bbox_min,vaca1_bbox_max,camera_position_c))
+                gameover=true;
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+            // #######################
+
+            current_name = (char*)cow_2.getName();
+            current_id = cow_2.getId();
+            current_position = cow_2.getPosition();
+
+            static float cow2Y_angle = -3*PI/4;
+            static float cow2X_angle = 0.0f;
+            static float cow2Z_angle = 0.0f;
+
+            model = Matrix_Translate(current_position.x,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(cow2X_angle)
+                    * Matrix_Rotate_Y(cow2Y_angle)
+                    * Matrix_Rotate_Z(cow2Z_angle);
+
+            glm::vec4 vaca2_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca2_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            if (CheckCubePlayerCollision(vaca2_bbox_min,vaca2_bbox_max,camera_position_c))
+                gameover=true;
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+            // #######################
+
+            current_name = (char*)cow_3.getName();
+            current_id = cow_3.getId();
+            current_position = cow_3.getPosition();
+
+            static float cow3Y_angle = PI/2;
+            static float cow3X_angle = 0.0f;
+            static float cow3Z_angle = 0.0f;
+
+            model = Matrix_Translate(current_position.x,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(cow3X_angle)
+                    * Matrix_Rotate_Y(cow3Y_angle)
+                    * Matrix_Rotate_Z(cow3Z_angle);
+
+            glm::vec4 vaca3_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca3_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            if (CheckCubePlayerCollision(vaca3_bbox_min,vaca3_bbox_max,camera_position_c))
+                gameover=true;
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+
+            // #######################
+
+            current_name = (char*)cow_4.getName();
+            current_id = cow_4.getId();
+            current_position = cow_4.getPosition();
+
+            static float cow4Y_angle = -PI/2;
+            static float cow4X_angle = 0.0f;
+            static float cow4Z_angle = 0.0f;
+
+            model = Matrix_Translate(current_position.x,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(cow4X_angle)
+                    * Matrix_Rotate_Y(cow4Y_angle)
+                    * Matrix_Rotate_Z(cow4Z_angle);
+
+            glm::vec4 vaca4_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca4_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            if (CheckCubePlayerCollision(vaca4_bbox_min,vaca4_bbox_max,camera_position_c))
+                gameover=true;
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+            // #######################
+
+            current_name = (char*)cow_5.getName();
+            current_id = cow_5.getId();
+            current_position = cow_5.getPosition();
+
+            static float cow5Y_angle = 2*PI/3;
+            static float cow5X_angle = 0.0f;
+            static float cow5Z_angle = 0.0f;
+
+            model = Matrix_Translate(current_position.x,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(cow5X_angle)
+                    * Matrix_Rotate_Y(cow5Y_angle)
+                    * Matrix_Rotate_Z(cow5Z_angle);
+
+            glm::vec4 vaca5_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca5_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            if (CheckCubePlayerCollision(vaca5_bbox_min,vaca5_bbox_max,camera_position_c))
+                gameover=true;
+
+            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+            glUniform1i(object_id_uniform, current_id);
+            DrawVirtualObject(current_name);
+
+            // #######################
+
+            current_name = (char*)cow_6.getName();
+            current_id = cow_6.getId();
+            current_position = cow_6.getPosition();
+
+            static float cow6Y_angle = 3*PI/4;
+            static float cow6X_angle = 0.0f;
+            static float cow6Z_angle = 0.0f;
+
+            model = Matrix_Translate(current_position.x,current_position.y,current_position.z)
+                    * Matrix_Rotate_X(cow6X_angle)
+                    * Matrix_Rotate_Y(cow6Y_angle)
+                    * Matrix_Rotate_Z(cow6Z_angle);
+
+            glm::vec4 vaca6_bbox_min = model * glm::vec4(g_VirtualScene[current_name].bbox_min.x,g_VirtualScene[current_name].bbox_min.y,g_VirtualScene[current_name].bbox_min.z,1.0f);
+            glm::vec4 vaca6_bbox_max = model * glm::vec4(g_VirtualScene[current_name].bbox_max.x,g_VirtualScene[current_name].bbox_max.y,g_VirtualScene[current_name].bbox_max.z,1.0f);
+
+            if (CheckCubePlayerCollision(vaca6_bbox_min,vaca6_bbox_max,camera_position_c))
+                gameover=true;
 
             glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
             glUniform1i(object_id_uniform, current_id);
@@ -811,8 +899,9 @@ int main(int argc, char* argv[])
 
 
 
-
             ////////////////////////////////////////
+
+            // outras paredes:
 
 			Wall floor;
 
