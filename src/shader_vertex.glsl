@@ -1,5 +1,7 @@
 #version 330 core
 
+#define CUBE 8
+
 // Atributos de vértice recebidos como entrada ("in") pelo Vertex Shader.
 // Veja a função BuildTrianglesAndAddToVirtualScene() em "main.cpp".
 layout (location = 0) in vec4 model_coefficients;
@@ -19,6 +21,11 @@ out vec4 position_world;
 out vec4 position_model;
 out vec4 normal;
 out vec2 texcoords;
+
+out vec3 cor_v;
+
+uniform int object_id;
+
 
 void main()
 {
@@ -57,6 +64,34 @@ void main()
     // Veja slide 94 do documento "Aula_07_Transformacoes_Geometricas_3D.pdf".
     normal = inverse(transpose(model)) * normal_coefficients;
     normal.w = 0.0;
+	
+	// Toda essa parte do código está bem explicada no shader_fragment.glsl
+	vec3 Kd; // Refletância difusa
+    vec3 Ks; // Refletância especular
+    vec3 Ka; // Refletância ambiente
+    float q; // Expoente especular para o modelo de iluminação de Phong
+
+	vec4 origin = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 camera_position = inverse(view) * origin;
+	vec4 p = position_world;
+	vec4 n = normalize(normal);
+	vec4 l = normalize(vec4(1.0,1.0,0.0,0.0));
+	vec4 v = normalize(camera_position - p);
+	vec4 r = -l + 2 * n * dot(n,l);
+	
+	//representando o cubo em Gourad Shading.
+    if(object_id==CUBE){
+		Kd = vec3(0.8,0.4,0.08);
+        Ks = vec3(0.0,0.0,0.0);
+        Ka = vec3(0.4,0.2,0.04);
+        q = 1.0;
+		vec3 I = vec3(1.0,1.0,1.0);
+        vec3 Ia = vec3(0.4,0.4,0.4);
+        vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l));
+        vec3 ambient_term = Ka * Ia;
+        vec3 phong_specular_term = Ks * I * max(0,pow(dot(r,v), q));
+        cor_v = lambert_diffuse_term + ambient_term + phong_specular_term;
+	}
 
     // Coordenadas de textura obtidas do arquivo OBJ (se existirem!)
     texcoords = texture_coefficients;

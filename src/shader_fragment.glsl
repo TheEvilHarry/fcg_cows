@@ -6,6 +6,7 @@
 // "main.cpp".
 in vec4 position_world;
 in vec4 normal;
+in vec3 cor_v;
 
 // Posição do vértice atual no sistema de coordenadas local do modelo.
 in vec4 position_model;
@@ -263,12 +264,14 @@ void main()
 
         // Equação de Iluminação
     if(object_id==CUBE){
+        /* //Deixei aqui caso queiramos deixar ele em phong shading novamente. > Vou excluir na versão final caso n usemos<
         vec3 I = vec3(1.0,1.0,1.0);
         vec3 Ia = vec3(0.4,0.4,0.4);
         vec3 lambert_diffuse_term = Kd * I * max(0, dot(n,l));
         vec3 ambient_term = Ka * Ia;
         vec3 phong_specular_term = Ks * I * max(0,pow(dot(r,v), q));
-        color = lambert_diffuse_term + ambient_term + phong_specular_term;
+        color = lambert_diffuse_term + ambient_term + phong_specular_term;*/
+        color = cor_v;
     }
     else if(object_id==COW)
     {
