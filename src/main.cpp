@@ -51,7 +51,7 @@
 #include "item.cpp"
 #include "defines.h"
 
-
+#define COW2 15
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -134,12 +134,12 @@ bool CheckCubePlayerCollision(glm::vec4 &bbox_min, glm::vec4 &bbox_max, glm::vec
 
 
 Item vaca_inicial(glm::vec4(18.0f, 0.0f, 0.0f, 0.0f), "cow", COW, false);
-Item cow_1(glm::vec4(4.0f, 0.0f, 1.5f, 0.0f), "cow", COW, true);
-Item cow_2(glm::vec4(-1.0f, 0.0f, -0.5f, 0.0f), "cow", COW, true);
-Item cow_3(glm::vec4(5.0f, 0.0f, 1.0f, 0.0f), "cow", COW, true);
-Item cow_4(glm::vec4(7.0f, 0.0f, -1.5f, 0.0f), "cow", COW, true);
-Item cow_5(glm::vec4(7.0f, 0.0f, 1.5f, 0.0f), "cow", COW, true);
-Item cow_6(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f), "cow", COW, true);
+Item cow_1(glm::vec4(4.0f, 0.0f, 1.5f, 0.0f), "cow", COW2, true);
+Item cow_2(glm::vec4(-1.0f, 0.0f, -0.5f, 0.0f), "cow", COW2, true);
+Item cow_3(glm::vec4(5.0f, 0.0f, 1.0f, 0.0f), "cow", COW2, true);
+Item cow_4(glm::vec4(7.0f, 0.0f, -1.5f, 0.0f), "cow", COW2, true);
+Item cow_5(glm::vec4(7.0f, 0.0f, 1.5f, 0.0f), "cow", COW2, true);
+Item cow_6(glm::vec4(0.0f, 0.0f, 1.0f, 0.0f), "cow", COW2, true);
 
 bool menu;
 char* current_name;
@@ -1203,7 +1203,8 @@ int main(int argc, char* argv[])
             {
                 wingame=true;
             }
-
+			if(player_pos[1] != 1.0f )
+                player_pos[1] = 1.0f;
 
 
             /*
@@ -2161,24 +2162,27 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
     }
 }
 
-
 void moving_player(glm::vec4 u,glm::vec4 w) {
     // You need to add or sub W or U vector to player_pos
     if (w_player_moving == 1) {
-        player_pos = player_pos - (moving_delta * w);
+         if((player_pos[0] > -11.0f && player_pos[0] < 20.5f && player_pos[2] > -3.4f && player_pos[2] < 3.8f) || (player_pos[0] > -6.8f && player_pos[0] < 20.5f && player_pos[2] > 12.4f && player_pos[2] < 16.5f ) || ( player_pos[0] > 20.5f && player_pos[0] < 27.5f && player_pos[2] > -3.4f && player_pos[2] < 28.0f) || ( player_pos[0] > 27.5f && player_pos[0] < 49.5f && player_pos[2] >24.0f && player_pos[2] < 28.0f  ) || ( freePath==1 && player_pos[0] < 19.0f && player_pos[2] > 12.4f && player_pos[2] < 16.5f ) )
+             player_pos = player_pos - (moving_delta * w);
+
+
     }
     if (s_player_moving == 1) {
         player_pos = player_pos + moving_delta * w;
     }
     if (a_player_moving == 1) {
+       if((player_pos[0] > -11.0f && player_pos[0] < 20.5f && player_pos[2] > -3.4f && player_pos[2] < 3.8f) || (player_pos[0] > -6.8f && player_pos[0] < 20.5f && player_pos[2] > 12.4f && player_pos[2] < 16.5f ) || ( player_pos[0] > 20.5f && player_pos[0] < 27.5f && player_pos[2] > -3.4f && player_pos[2] < 28.0f) || ( player_pos[0] > 27.5f && player_pos[0] < 49.5f && player_pos[2] >24.0f && player_pos[2] < 28.0f  ) || ( freePath==1 && player_pos[0] < 19.0f && player_pos[2] > 12.4f && player_pos[2] < 16.5f ) )
         player_pos = player_pos - moving_delta * u;
+
     }
     if (d_player_moving == 1) {
-        player_pos = player_pos + moving_delta * u;
+       if((player_pos[0] > -11.0f && player_pos[0] < 20.5f && player_pos[2] > -3.4f && player_pos[2] < 3.8f) || (player_pos[0] > -6.8f && player_pos[0] < 20.5f && player_pos[2] > 12.4f && player_pos[2] < 16.5f ) || ( player_pos[0] > 20.5f && player_pos[0] < 27.5f && player_pos[2] > -3.4f && player_pos[2] < 28.0f) || ( player_pos[0] > 27.5f && player_pos[0] < 49.5f && player_pos[2] >24.0f && player_pos[2] < 28.0f  ) || ( freePath==1 && player_pos[0] < 19.0f && player_pos[2] > 12.4f && player_pos[2] < 16.5f ) )
+         player_pos = player_pos + moving_delta * u;
     }
 }
-
-
 
 // Função callback chamada sempre que o usuário movimentar o cursor do mouse em
 // cima da janela OpenGL.

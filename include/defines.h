@@ -11,5 +11,6 @@
 
 #define DOOR 9
 #define KEYF 10
+#define COW2 15
 
 #define PI 3.141592f
